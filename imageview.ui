@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ImageView</class>
+ <widget class="QMainWindow" name="ImageView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QScrollArea" name="scrollArea">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>781</width>
+      <height>531</height>
+     </rect>
+    </property>
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>779</width>
+       <height>529</height>
+      </rect>
+     </property>
+     <widget class="QLabel" name="imageLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>16</y>
+        <width>751</width>
+        <height>501</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>imageLabel</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuZoom">
+    <property name="title">
+     <string>zoom</string>
+    </property>
+    <addaction name="zoomInAct"/>
+    <addaction name="zoomOutAct"/>
+    <addaction name="normalSizeAct"/>
+   </widget>
+   <widget class="QMenu" name="menuAnnotate">
+    <property name="title">
+     <string>annotate</string>
+    </property>
+    <widget class="QMenu" name="menuWhite_frame">
+     <property name="title">
+      <string>white frame</string>
+     </property>
+     <addaction name="frame1Act"/>
+     <addaction name="frame2Act"/>
+     <addaction name="frame3Act"/>
+     <addaction name="frame4Act"/>
+    </widget>
+    <widget class="QMenu" name="menuSpheres_2">
+     <property name="title">
+      <string>spheres</string>
+     </property>
+     <addaction name="sphere1Act"/>
+     <addaction name="sphere2Act"/>
+     <addaction name="sphere3Act"/>
+     <addaction name="sphere4Act"/>
+     <addaction name="actionClear"/>
+    </widget>
+    <addaction name="actionOff"/>
+    <addaction name="menuWhite_frame"/>
+    <addaction name="menuSpheres_2"/>
+   </widget>
+   <widget class="QMenu" name="menuI_o">
+    <property name="title">
+     <string>i/o</string>
+    </property>
+    <addaction name="loadAct"/>
+   </widget>
+   <addaction name="menuZoom"/>
+   <addaction name="menuAnnotate"/>
+   <addaction name="menuI_o"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="zoomInAct">
+   <property name="text">
+    <string>zoom in</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl++</string>
+   </property>
+  </action>
+  <action name="zoomOutAct">
+   <property name="text">
+    <string>zoom out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="loadAct">
+   <property name="text">
+    <string>load</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="normalSizeAct">
+   <property name="text">
+    <string>normalSize</string>
+   </property>
+  </action>
+  <action name="actionSphere1">
+   <property name="text">
+    <string>sphere1</string>
+   </property>
+  </action>
+  <action name="actionSphere2">
+   <property name="text">
+    <string>sphere 2</string>
+   </property>
+  </action>
+  <action name="frame1Act">
+   <property name="text">
+    <string>frame 1</string>
+   </property>
+  </action>
+  <action name="frame2Act">
+   <property name="text">
+    <string>frame 2</string>
+   </property>
+  </action>
+  <action name="frame3Act">
+   <property name="text">
+    <string>frame 3</string>
+   </property>
+  </action>
+  <action name="frame4Act">
+   <property name="text">
+    <string>frame 4</string>
+   </property>
+  </action>
+  <action name="sphere1Act">
+   <property name="text">
+    <string>sphere 1</string>
+   </property>
+  </action>
+  <action name="sphere2Act">
+   <property name="text">
+    <string>sphere 2</string>
+   </property>
+  </action>
+  <action name="sphere3Act">
+   <property name="text">
+    <string>sphere 3</string>
+   </property>
+  </action>
+  <action name="sphere4Act">
+   <property name="text">
+    <string>sphere 4</string>
+   </property>
+  </action>
+  <action name="actionOff">
+   <property name="text">
+    <string>off</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>clear</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
