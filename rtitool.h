@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QListWidgetItem>
 #include "imageview.h"
+#include <QString>
 
 namespace Ui {
 class RTITool;
@@ -64,6 +65,8 @@ private slots:
     void on_rems4_clicked();
 
     void on_lightEst_clicked();
+
+    void saveLp(QString fileName);
 
     void on_saveLp_clicked();
 
@@ -135,7 +138,13 @@ private slots:
 
     void on_loadListButton_clicked();
 
+    void loadList(QString fileName);
+
+    void loadLp(QString fileName);
+
     void on_loadLpButton_clicked();
+
+    void loadCalib(QString fileName);
 
     void on_loadCalibButton_clicked();
 
@@ -172,6 +181,7 @@ private slots:
 
     void on_nextButton_clicked();
 
+    void saveId(QString fileName);
     void on_saveIdButton_clicked();
 
     void on_loadIdButton_clicked();
@@ -179,6 +189,29 @@ private slots:
     void on_loadCalimButton_clicked();
 
     void on_corrBackimgBut_clicked();
+
+    void on_createProjectButton_clicked();
+
+    void on_openProjectButton_clicked();
+
+    void on_findImagesButton_clicked();
+
+    void on_copyFolderButton_clicked();
+
+    QString getFilename();
+
+
+    QString getFoldername();
+
+    void loadCorrim(QString fileName);
+
+    void loadCorrData(QString fileName);
+
+    void on_importCalimButton_clicked();
+
+    void importCalim(QString sourceFolder);
+
+    void findCalim();
 
 private:
     Ui::RTITool *ui;

@@ -63,20 +63,20 @@ void savePTM_LRGB(QString filename, int W, int H, QString chroma_img){
     float* pBuff;
     for (int i = 0; i <= 5; i++){
         ifstream coef (files[i], ios::in | ios::binary);
-         pBuff = new float[W*H];
+        pBuff = new float[W*H];
         coef.read((char*)pBuff,W*H*sizeof(float));
         min[i] = 99999999999;
         max[i] = -99999999999;
 
         for (int x= 0; x < W*H; x++)
-                {
-                if(pBuff[x] > max[i]) max[i]=pBuff[x];
-                if(pBuff[x] < min[i]) min[i]=pBuff[x];
-            }
+        {
+            if(pBuff[x] > max[i]) max[i]=pBuff[x];
+            if(pBuff[x] < min[i]) min[i]=pBuff[x];
+        }
 
         scale[i]=(float) 1.0+floor((max[i]-min[i]-1)/256);
         bias[i]=(int)(-min[i]/scale[i]);// you can change this value
-delete(pBuff);
+        delete(pBuff);
         qDebug() <<"minmax "<<min[i]<< ' ' << max[i] <<'\n';
         qDebug() <<"scale "<<int(scale[i])<<'\n';
         qDebug() <<"bias "<<int(bias[i])<<'\n';
@@ -87,7 +87,7 @@ delete(pBuff);
 
     for (int i = 0; i <= 5; i++){
         ifstream coef (files[i], ios::in | ios::binary);
-       pBuff = new float[W*H];
+        pBuff = new float[W*H];
         coef.read((char*)pBuff,W*H*sizeof(float));
         coef.close();
 
@@ -95,7 +95,7 @@ delete(pBuff);
             for (int y = 0; y <H; y++)
             {
 
-                 scaledc[x+y*W+W*H*i] = (unsigned char)((pBuff[y*W+x]/scale[i])+(float)bias[i]);
+                scaledc[x+y*W+W*H*i] = (unsigned char)((pBuff[y*W+x]/scale[i])+(float)bias[i]);
             }
         delete(pBuff);
     }
@@ -123,12 +123,12 @@ delete(pBuff);
     unsigned char c;
 
     cv::Mat image;
-   image = cv::imread(chroma_img.toStdString(), CV_LOAD_IMAGE_COLOR);
-   // image = cv::imread("/home/giach/Data/Repos/scan4reco/playground/rtitool2/CROPPEDRoughCorrSing/cropped0.tif", CV_LOAD_IMAGE_COLOR);
+    image = cv::imread(chroma_img.toStdString(), CV_LOAD_IMAGE_COLOR);
+    // image = cv::imread("/home/giach/Data/Repos/scan4reco/playground/rtitool2/CROPPEDRoughCorrSing/cropped0.tif", CV_LOAD_IMAGE_COLOR);
 
 
-               for (int y = H-1; y >=0; y--)
-                for (int x = 0;x<W; x++)
+    for (int y = H-1; y >=0; y--)
+        for (int x = 0;x<W; x++)
             for (int i = 0; i < 6; i++)
             {
                 c=scaledc[x+y*W+W*H*i] ;//scaledc[i].at<unsigned char>(x,y);
@@ -136,11 +136,11 @@ delete(pBuff);
 
             }
 
-                for (int y = H-1; y >=0; y--)
-                for (int x = 0;x<W; x++){
-                Vec3b val=image.at<Vec3b>(y,x);
+    for (int y = H-1; y >=0; y--)
+        for (int x = 0;x<W; x++){
+            Vec3b val=image.at<Vec3b>(y,x);
 
-                for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
                 outfile.write(( char *)&val[i],1);
         }
 
@@ -281,7 +281,7 @@ cv::RotatedRect segmentAndFitEllipseMax(cv::Mat& image){
 */
     //imshow("segmentedGC",foreground);
     //waitKey();
-   /* cv::Mat sel = cv::getStructuringElement(cv::MorphShapes (MORPH_ELLIPSE),cv::Size(20,20));
+    /* cv::Mat sel = cv::getStructuringElement(cv::MorphShapes (MORPH_ELLIPSE),cv::Size(20,20));
     cv::morphologyEx(segmentedOtsu, segmentedOtsu, cv::MorphShapes (MORPH_OPEN),sel);
     sel = cv::getStructuringElement(cv::MorphShapes (MORPH_ELLIPSE),cv::Size(40,40));
     cv::morphologyEx(segmentedOtsu, segmentedOtsu, cv::MorphShapes (MORPH_CLOSE),sel);*/
@@ -372,8 +372,8 @@ cv::Point2f getHighlightPosition(cv::Mat& image, cv::RotatedRect& boxEllipse){
 
     // loop over gray level
 
-   // for (int valore = 255; (la>0 == 0) && valore>5; valore=valore-1){
-        for (int valore = 255; (contorni.size() == 0) && valore>5; valore=valore-3){
+    // for (int valore = 255; (la>0 == 0) && valore>5; valore=valore-1){
+    for (int valore = 255; (contorni.size() == 0) && valore>5; valore=valore-3){
         threshold( area , dst, valore, 255,0);
         findContours(dst, contorni, RETR_EXTERNAL, CV_CHAIN_APPROX_NONE, Point(0,0));
 
@@ -395,11 +395,11 @@ cv::Point2f getHighlightPosition(cv::Mat& image, cv::RotatedRect& boxEllipse){
                 centroide = centroid_i;
             }
 
-          if(li=-1){
-            li=0;
-            la=0;
-            centroide.x = contorni[0][0].x;
-            centroide.y = contorni[0][0].y;
+            if(li=-1){
+                li=0;
+                la=0;
+                centroide.x = contorni[0][0].x;
+                centroide.y = contorni[0][0].y;
             }
 
         }
@@ -414,7 +414,7 @@ cv::Point2f getHighlightPosition(cv::Mat& image, cv::RotatedRect& boxEllipse){
         drawContours(image, contorni, li, color, -1,8, noArray(), 0,Point(0,0));
 
         circle(image ,centroide, 1, color2, -1, 8,0);
-     /*   imshow("region",image);
+        /*   imshow("region",image);
         waitKey();
         */
     }
@@ -629,18 +629,18 @@ void fitCircle(Mat image, float* cx, float* cy, float* r){
 
     Mat contours;
     //Canny(image,contours,50,200);
-  //        cv::namedWindow("Canny");
+    //        cv::namedWindow("Canny");
     //  cv::imshow("Canny",contours);
-     //cv::waitKey(0);
+    //cv::waitKey(0);
 
     //GaussianBlur( image, image, Size(3, 3), 2, 2 );
     HoughCircles( image, circles, CV_HOUGH_GRADIENT, 1, 10, 60, 20, *r/2, *r+2);
     for( size_t i = 0; i < circles.size(); i++ )
-       {
-       qDebug() << circles[i][2];
+    {
+        qDebug() << circles[i][2];
 
-   }
-   if(circles.size()>0){
+    }
+    if(circles.size()>0){
         qDebug() << "Fit OK";
         *cx= (circles[0][0]);
         *cy= (circles[0][1]);
@@ -649,9 +649,9 @@ void fitCircle(Mat image, float* cx, float* cy, float* r){
     }
 
     // display for debug
-     //namedWindow( "Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE );
-   //   imshow( "Hough Circle Transform Demo", image );
- //waitKey(0);
+    //namedWindow( "Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE );
+    //   imshow( "Hough Circle Transform Demo", image );
+    //waitKey(0);
 
     // old trials to do a different circle detection
     /* for(float x=centro.x-10; x<centro.x+10; x++)
@@ -766,14 +766,14 @@ double* Highlight(Mat region, int cx, int cy, int raggio){
                     Sy = Sy_i;
                 }
             }
-       if(li=-1){
-       li=0;
-       la=0;
-       centroide.x = cx -raggio + contorni[0][0].x;
-       centroide.y = cy -raggio + contorni[0][0].y;
-       Sx = double((centroide.x - cx)) / raggio;
-       Sy = -1.0 *  double((centroide.y - cy)) / raggio;
-       }
+            if(li=-1){
+                li=0;
+                la=0;
+                centroide.x = cx -raggio + contorni[0][0].x;
+                centroide.y = cy -raggio + contorni[0][0].y;
+                Sx = double((centroide.x - cx)) / raggio;
+                Sy = -1.0 *  double((centroide.y - cy)) / raggio;
+            }
 
         } // Look for centroid at current level
 
@@ -801,7 +801,7 @@ double* Highlight(Mat region, int cx, int cy, int raggio){
         // Compute light vector
         phiL=0;
         if(1.0 - pow(Sx,2.0) - pow(Sy,2.0)>0)
-        phiL = 2.0 *acos (double(sqrt(1.0 - pow(Sx,2.0) - pow(Sy,2.0))));
+            phiL = 2.0 *acos (double(sqrt(1.0 - pow(Sx,2.0) - pow(Sy,2.0))));
         //tetaL = atan (double(cy - centroide.y)/ double((cx - centroide.x)));
 
         tetaL = atan2 (double(cy - centroide.y),double((cx - centroide.x)));
@@ -851,6 +851,13 @@ RTITool::RTITool(QWidget *parent) :
     ui->angle2spin->setVisible(false);
     ui->angle3spin->setVisible(false);
     ui->angle4spin->setVisible(false);
+
+    ui->tabDir->setTabEnabled(2, false);
+    ui->tabDir->setTabEnabled(3, false);
+    ui->tabDir->setTabEnabled(4, false);
+    ui->tabDir->setTabEnabled(1, false);
+
+    ui->folderName->setReadOnly(true);
 }
 
 RTITool::~RTITool()
@@ -935,7 +942,9 @@ void RTITool::on_actionImage_list_triggered()
     ui->listWidget->clear();
     ui->listWidget->addItems( nList );
 
-    iw->load(ui->listWidget->item(0)->text());
+    QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + ui->listWidget->item(0)->text();
+    iw->load(filen);
+    //iw->load(ui->listWidget->item(0)->text());
     iw->show();
 
     for(int i=0;i<4;i++){
@@ -991,16 +1000,16 @@ void RTITool::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 {
     // Load an image
     Mat image;
-
-    image = imread(item->text().toStdString());   // Read the file
+    /*  QString name = ui->folderName->text()  + QDir::separator() + "images" + QDir::separator()  + item->text();
+    image = imread(name.toStdString());   // Read the file
     qDebug(item->text().toLatin1());
-    if(! image.data )         // Chec.toLatin1()k for invalid input
+    if(! image.data )         // Check for invalid input
     {
 
         return;
     }
-
-    iw->load(item->text());
+*/
+    iw->load(ui->folderName->text()  + QDir::separator() + "images" + QDir::separator()  + item->text());
     /*  // Create a window for display.
       namedWindow( "Display window", CV_WINDOW_AUTOSIZE );
 
@@ -1040,7 +1049,8 @@ void RTITool::on_actionEstimate_triggered()
             for(int row = 0; row < ui->listWidget->count(); row++)
             {
                 QListWidgetItem *item = ui->listWidget->item(row);
-                image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+                QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+                image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
                 image(rc[ns]).copyTo(rois1);
 
                 double* lv=Highlight(rois1,iw->cx[ns],iw->cy[ns],iw->radius[ns]);
@@ -1082,7 +1092,10 @@ void RTITool::toggleSph1()
         }
         else{
             item= ui->listWidget->currentItem();
-            image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+
+            // image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+            QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+            image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
         }
         image(r).copyTo(rois1);
         cv::cvtColor(rois1,groi,CV_BGR2GRAY);
@@ -1212,7 +1225,9 @@ void RTITool::toggleSph2()
         }
         else{
             item= ui->listWidget->currentItem();
-            image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+            QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+            image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
+            //image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
         }
         //QListWidgetItem *item = ui->listWidget->currentItem();
         //image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
@@ -1349,7 +1364,9 @@ void RTITool::toggleSph3()
         }
         else{
             item= ui->listWidget->currentItem();
-            image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+            //image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+            QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+            image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
         }
 
         image(r).copyTo(rois1);
@@ -1477,7 +1494,9 @@ void RTITool::toggleSph4()
         }
         else{
             item= ui->listWidget->currentItem();
-            image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+            QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+            image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
+            //image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
         }
 
 
@@ -1747,7 +1766,7 @@ void RTITool::on_lightEst_clicked()
     QFile sphfile(sphFilename);
     QTextStream stream( &sphfile );
     if (!sphfile.open(QFile::WriteOnly | QFile::Text)) {
-                   qDebug() << "error";
+        qDebug() << "error";
     }
 
     else{
@@ -1760,7 +1779,7 @@ void RTITool::on_lightEst_clicked()
             // we have the ns th sphere. we could/should handle missing ones
 
             qDebug() << "Scale factor " << iw->scaleFactor;
-        //    iw->sphere1->frameGeometry().getCoords(&ax,&ay,&bx,&by);
+            //    iw->sphere1->frameGeometry().getCoords(&ax,&ay,&bx,&by);
             //if (ns == 0) iw->sphere1->frameGeometry().getCoords(&ax,&ay,&bx,&by);
             //if (ns == 1) iw->sphere2->frameGeometry().getCoords(&ax,&ay,&bx,&by);
 
@@ -1777,7 +1796,9 @@ void RTITool::on_lightEst_clicked()
             for(int row = 0; row < ui->listWidget->count(); row++)
             {
                 item = ui->listWidget->item(row);
-                image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+                //    image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+                QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+                image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
 
                 //qDebug() <<  item->text();
                 //qDebug() << iw->cx[ns] << " " << iw->radius[ns] << iw->cy[ns] << endl;
@@ -1811,11 +1832,11 @@ void RTITool::on_lightEst_clicked()
                     Rect rc(ax+iw->cx[ns] - iw->radius[ns],ay+iw->cy[ns]-iw->radius[ns],2*iw->radius[ns]+1,2*iw->radius[ns]+1);
 
                     qDebug() << ns << "---" << ax << " " << iw->cx[ns];
-                     qDebug() << "---" << ay << " " << iw->cy[ns];
+                    qDebug() << "---" << ay << " " << iw->cy[ns];
                     image(rc).copyTo(rois1);
 
- //                   imshow("region",rois1);
- //                   waitKey();
+                    //                   imshow("region",rois1);
+                    //                   waitKey();
                     lv=Highlight(rois1,iw->cx[ns],iw->cy[ns],iw->radius[ns]);
 
                 }
@@ -1845,13 +1866,18 @@ void RTITool::on_lightEst_clicked()
         ui->msgBox->append("Light directions estimated with orthographic projection");
     }
     sphfile.close();
+
+
+    saveLp(ui->folderName->text()+  QDir::separator() + "file.lp");
+
+    if(cs>2)
+        RTITool::on_interpDir_clicked();
+
     progress.setValue(100);
 }
 
+void RTITool::saveLp(QString fileName){
 
-
-void RTITool::on_saveLp_clicked()
-{
     int ns=0;
     int sn[4]={0,0,0,0};
     for(int i=0;i<4;i++)
@@ -1860,12 +1886,8 @@ void RTITool::on_saveLp_clicked()
             ns=ns+1;
         }
 
-    QString filename = QFileDialog::getSaveFileName(
-                this,
-                tr("File name"),
-                QDir::currentPath(),
-                tr("*.lp") );
-    QFile file(filename);
+
+    QFile file(fileName);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
         qDebug() << "error";
     }
@@ -1900,6 +1922,20 @@ void RTITool::on_saveLp_clicked()
         }
     }
     file.close();
+}
+
+void RTITool::on_saveLp_clicked()
+{
+
+    QString filename = QFileDialog::getSaveFileName(
+                this,
+                tr("File name"),
+                QDir::currentPath(),
+                tr("*.lp") );
+
+    saveLp(filename);
+
+
 }
 
 
@@ -2480,6 +2516,34 @@ void RTITool::on_whiteEst_clicked()
     Mat B;
     Mat X;
     Mat WC;
+
+    QFile cofile(ui->folderName->text() + QDir::separator() + "corr.txt");
+
+    if (!cofile.open(QIODevice::WriteOnly | QIODevice::Text))
+        qDebug() << "error";
+
+    QTextStream out(&cofile);
+
+    out << "CORR_TYPE frame" << endl;
+
+    for(int k=0; k<4; k++) {
+        if(k==0) iw->white1->frameGeometry().getCoords(&ax,&ay,&bx,&by);
+        else if(k==1) iw->white2->frameGeometry().getCoords(&ax,&ay,&bx,&by);
+        else if(k==2)  iw->white3->frameGeometry().getCoords(&ax,&ay,&bx,&by);
+        else  iw->white4->frameGeometry().getCoords(&ax,&ay,&bx,&by);
+
+        if(bx>0 && by>0){
+            ax = (int) ((double)ax / iw->scaleFactor);
+            ay = (int) ((double)ay / iw->scaleFactor);
+            bx = (int) ((double)bx / iw->scaleFactor);
+            by = (int) ((double)by / iw->scaleFactor);
+
+            out << ax << " " << ay << " " << bx << " " << by << endl;
+
+        }
+    }
+
+
     Mat CI;
 
     QProgressDialog pdialog("Estimating white correction","",0,100,this);
@@ -2490,9 +2554,11 @@ void RTITool::on_whiteEst_clicked()
 
     pdialog.show();
 
+    // estimating a second order polynomial fit of the frame color
 
     for(int ns=0;ns<6;ns++)
         iw->coeffs[ns].clear();
+
     // o 10
     A=Mat::zeros(100,6,CV_64FC1);
     B=Mat::zeros(100,1,CV_64FC1);
@@ -2509,9 +2575,11 @@ void RTITool::on_whiteEst_clicked()
 
     QListWidgetItem *item = ui->listWidget->currentItem();
 
+    /* SAVE CORRECTION
     QString outname;
-    if(!QDir("TMP").exists())
-        QDir().mkdir("TMP");
+    if(!QDir(ui->folderName->text() + QDir::separator() +"TMP").exists())
+        QDir().mkdir(ui->folderName->text() + QDir::separator() +"TMP");
+*/
 
     elev =0;
 
@@ -2521,7 +2589,8 @@ void RTITool::on_whiteEst_clicked()
             ui->msgBox->append("Error: please estimate interpolated dirs first");
             return;
         }
-/* ATTENZIONE commentato
+
+        /* ATTENZIONE commentato
         for(int row = 0; row < ui->listWidget->count(); row++)
         {
 
@@ -2556,12 +2625,20 @@ void RTITool::on_whiteEst_clicked()
         QApplication::processEvents();
 
         item = ui->listWidget->item(row);
-        outname = "TMP/correction" + QString::number(row) + ".tif";
 
-        if(!iw->force8bit)
-            image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+        /* SAVE CORRECTION
+        outname = ui->folderName->text() + QDir::separator() + "TMP/correction" + QString::number(row) + ".tif";
+*/
+        QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+
+        if(!iw->force8bit){
+
+            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+            //  image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+        }
         else
-            image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
+        //image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
 
         CI = image.clone();
         cv::cvtColor(image,gim,CV_BGR2GRAY);
@@ -2577,26 +2654,26 @@ void RTITool::on_whiteEst_clicked()
             tazim = atan(tly/tlx);
             qDebug() <<  cx << cy << " - " << row << "QUA" << (tlz) ;
         }
-    else {
+        else {
             tlx=tly=tlz=0;
             int nl=0;
             for(int i=0; i<4;i++)
                 if(! iw->lights[i].size() == 0){
-                        tlx+=iw->lights[i].at(row)[0];
-                        tly+=iw->lights[i].at(row)[1];
-                        tlz+=iw->lights[i].at(row)[2];
-                        nl++;
-            }
+                    tlx+=iw->lights[i].at(row)[0];
+                    tly+=iw->lights[i].at(row)[1];
+                    tlz+=iw->lights[i].at(row)[2];
+                    nl++;
+                }
             if(nl==0){
-                        ui->msgBox->append("Error: please estimate light direction first");
-                        return;
-                    }
+                ui->msgBox->append("Error: please estimate light direction first");
+                return;
+            }
             tlx/=nl;
             tly/=nl;
             tlz/=nl;
             double norm = sqrt(tlx*tlx+tly*tly+tlz*tlz);
             tlx=tlx/norm;tly=tly/norm;tlz=tlz/norm;
-         qDebug() <<  "OK " << tlx << " " << tly << " " << (tlz) ;
+            qDebug() <<  "OK " << tlx << " " << tly << " " << (tlz) ;
         }
 
         for(int k=0; k<4; k++) {
@@ -2660,6 +2737,9 @@ void RTITool::on_whiteEst_clicked()
         for(int i=0;i<6;i++)
             iw->coeffs[i].push_back(X.at<double>(i));
 
+        out << X.at<double>(0) << " " << X.at<double>(1) << " " << X.at<double>(2) << " " << X.at<double>(4) << " " << X.at<double>(4) << " " << X.at<double>(5) << " " << endl;
+
+
         for(int k=0; k<4; k++) {
             if(k==0) iw->white1->frameGeometry().getCoords(&ax,&ay,&bx,&by);
             else if(k==1) iw->white2->frameGeometry().getCoords(&ax,&ay,&bx,&by);
@@ -2697,7 +2777,7 @@ void RTITool::on_whiteEst_clicked()
 
         qDebug() << row << "error " << err;
 
-#if 1 //         1 to save correction images
+#if 0//         1 to save correction images
         /* save correction image */
         double aa;
         for(int i=0;i<CI.cols;i++)
@@ -2739,6 +2819,8 @@ void RTITool::on_whiteEst_clicked()
 
     }
 
+    ui->corrLab->setText("OK");
+
     /* grayref = cx*cx*(iw->coeffs[0]).at(rmax)+ cy*cy*(iw->coeffs[1]).at(rmax)+
             cx*cy*(iw->coeffs[2]).at(rmax)+ cx*(iw->coeffs[3]).at(rmax)+
             cy*(iw->coeffs[4]).at(rmax)+ (iw->coeffs[5]).at(rmax);
@@ -2765,10 +2847,19 @@ void RTITool::on_saveCorrImages_clicked()
     by = (int) ((double)by / iw->scaleFactor);
     Rect rc(ax,ay,bx-ax,by-ay);
 
+    QFile cofile(ui->folderName->text() + QDir::separator() + "corrim.txt");
+
+    if (!cofile.open(QIODevice::WriteOnly | QIODevice::Text))
+        qDebug() << "error";
+
+    QTextStream out(&cofile);
+
+    out << ui->weightDir->isChecked() << endl;
+    out << ui->refWhite->value() << endl;
 
     QString outname;
-    if(!QDir("CORR_IMG").exists())
-        QDir().mkdir("CORR_IMG");
+    if(!QDir(ui->folderName->text() + QDir::separator() +"CORR_IMG").exists())
+        QDir().mkdir(ui->folderName->text() + QDir::separator() +"CORR_IMG");
 
     QProgressDialog pdialog("Saving corrected images","",0,100,this);
     pdialog.setWindowModality(Qt::WindowModal);
@@ -2788,37 +2879,40 @@ void RTITool::on_saveCorrImages_clicked()
             tlx=tlx/norm;tly=tly/norm;tlz=tlz/norm;
         }
         else {
-                tlx=tly=tlz=0;
-                int nl=0;
-                for(int i=0; i<4; i++)
-                    if(! iw->lights[i].size() == 0){
-                            tlx+=iw->lights[i].at(row)[0];
-                            tly+=iw->lights[i].at(row)[1];
-                            tlz+=iw->lights[i].at(row)[2];
-                            nl++;
+            tlx=tly=tlz=0;
+            int nl=0;
+            for(int i=0; i<4; i++)
+                if(! iw->lights[i].size() == 0){
+                    tlx+=iw->lights[i].at(row)[0];
+                    tly+=iw->lights[i].at(row)[1];
+                    tlz+=iw->lights[i].at(row)[2];
+                    nl++;
                 }
-                if(nl==0){
-                            ui->msgBox->append("Error: please estimate light direction first");
-                            return;
-                        }
-                tlx/=nl;
-                tly/=nl;
-                tlz/=nl;
-                double norm = sqrt(tlx*tlx+tly*tly+tlz*tlz);
-                tlx=tlx/norm;tly=tly/norm;tlz=tlz/norm;
-             qDebug() <<  "OK " << tlx << " " << tly << " " << (tlz) ;
+            if(nl==0){
+                ui->msgBox->append("Error: please estimate light direction first");
+                return;
             }
+            tlx/=nl;
+            tly/=nl;
+            tlz/=nl;
+            double norm = sqrt(tlx*tlx+tly*tly+tlz*tlz);
+            tlx=tlx/norm;tly=tly/norm;tlz=tlz/norm;
+            qDebug() <<  "OK " << tlx << " " << tly << " " << (tlz) ;
+        }
 
         pdialog.setValue(100*row/ui->listWidget->count());
         QApplication::processEvents();
 
 
         item = ui->listWidget->item(row);
-        outname = "CORR_IMG/corrected" + QString::number(row) + ".tif";
+
+        outname = ui->folderName->text() + QDir::separator() +"CORR_IMG" + QDir::separator() + "corrected" + QString::number(row) + ".tif";
+
+        QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
         if(!iw->force8bit)
-            image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
         else
-            image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
         double min, max;
         cv::minMaxLoc(image, &min, &max);
         qDebug() << "minmax " << min << max;
@@ -2887,7 +2981,7 @@ void RTITool::on_saveCorrImages_clicked()
                         aa=abs(aa/tlz);
                     double ww = ui->refWhite->value();
 
-                   for(int k=0;k<3;k++)
+                    for(int k=0;k<3;k++)
                         color[k] = (unsigned short) MIN(65535,MAX(0,(((unsigned short)color[k])*ww*65535.0/aa)));
 
                     CI.at<Vec<unsigned short, 3> >(Point(i,j)) = color;
@@ -2895,7 +2989,7 @@ void RTITool::on_saveCorrImages_clicked()
                 }
             }
 
-      /*  if(ax >0 && bx>0)
+        /*  if(ax >0 && bx>0)
             CI = CI(rc);*/
 
         imwrite( outname.toStdString(), CI );
@@ -2904,6 +2998,7 @@ void RTITool::on_saveCorrImages_clicked()
         gim.release();
     }
 
+    ui->savecLab->setText("OK");
 
 }
 
@@ -2986,7 +3081,11 @@ void RTITool::on_interpDir_clicked()
 
         }
         Vec3b color;
-        if(row==0){ IM = imread((ui->listWidget->item(0))->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+        QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + ui->listWidget->item(0)->text();
+
+        if(row==0){
+            //IM = imread((ui->listWidget->item(0))->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+            IM = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
             for(int i=0;i<iw->s.width();i++)
                 for(int j=0;j<iw->s.height();j++){
                     dx = i*X.at<double>(0)+j*X.at<double>(1)+ X.at<double>(2);
@@ -3036,13 +3135,17 @@ void RTITool::on_pushButton_clicked()
 
     QListWidgetItem* item;
     item = ui->listWidget->item(0);
-    image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+    QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+
+    image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
     maxi=image.clone();
     image.release();
     for(int row = 1; row < ui->listWidget->count(); row++)
     {
         item = ui->listWidget->item(row);
-        image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+        filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+
+        image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
         cv::max(image,maxi,maxi);
         image.release();
         pdialog.setValue(100*row/ui->listWidget->count());
@@ -3051,7 +3154,8 @@ void RTITool::on_pushButton_clicked()
         QApplication::processEvents();
     }
 
-    imwrite( "maxi.png", maxi );
+    QString outn = ui->folderName->text() + QDir::separator()  +"maxi.png";
+    imwrite( outn.toStdString(), maxi );
 
     cvtColor(maxi,maxi, COLOR_BGR2RGB);
 
@@ -3076,13 +3180,15 @@ void RTITool::on_pushButton_2_clicked()
 
     QListWidgetItem* item;
     item = ui->listWidget->item(0);
-    image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+    QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+    image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
     mini=image.clone();
     image.release();
     for(int row = 1; row < ui->listWidget->count(); row++)
     {
         item = ui->listWidget->item(row);
-        image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+        filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+        image = imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
         cv::min(image,mini,mini);
         image.release();
         pdialog.setValue(100*row/ui->listWidget->count());
@@ -3096,6 +3202,9 @@ void RTITool::on_pushButton_2_clicked()
     double min, max;
     //cv::minMaxLoc(mini, &min, &max);
     cv::normalize(mini, mini, 0, 255, NORM_MINMAX, CV_8UC1);
+
+    QString outn = ui->folderName->text() + QDir::separator()  +"mini.png";
+    imwrite( outn.toStdString(), maxi );
 
     pdialog.setValue(100);
     iw->imageLabel->setPixmap(QPixmap::fromImage(QImage(mini.data,mini.cols,mini.rows,mini.step,QImage::Format_RGB888)));
@@ -3112,10 +3221,10 @@ void RTITool::on_saveAPA_clicked()
     int flag_binary = 0;
 
     QString file_pref = QInputDialog::getText(this, "Enter Filename without suffix", "");
-    QString  filename=file_pref + ".aph";
-    QString  binname=file_pref + ".apd";
-    QString  chrname=file_pref + "_croma.tiff";
-    QString  chrname2=file_pref + "_cromax.tiff";
+    QString  filename=ui->folderName->text() + QDir::separator() + file_pref + ".aph";
+    QString  binname=ui->folderName->text() + QDir::separator() + file_pref + ".apd";
+    QString  chrname=ui->folderName->text() + QDir::separator() + file_pref + "_croma.tiff";
+    QString  chrname2=ui->folderName->text() + QDir::separator() + file_pref + "_cromax.tiff";
 
     if(ui->dirInfo->currentIndex()==1) flag_dir=1;
     if(ui->dirInfo->currentIndex()==2) flag_dir=2;
@@ -3141,8 +3250,8 @@ void RTITool::on_saveAPA_clicked()
     sy = (int) ((double)sy / iw->scaleFactor);
     qDebug() << ax << " "<< ay << " "<< sx << " "<< sy << " ";
 
-  //  if(!QDir("CROPPED_IMG").exists())
-  //      QDir().mkdir("CROPPED_IMG");
+    //  if(!QDir("CROPPED_IMG").exists())
+    //      QDir().mkdir("CROPPED_IMG");
 
     QFile file(filename);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
@@ -3151,20 +3260,20 @@ void RTITool::on_saveAPA_clicked()
     else{
         QTextStream stream( &file );
 
-      if(ui->apType->currentIndex()==0) {
-        stream << "APA LUMINANCE\n";
-        if(iw->depth==0)
-            stream << "LUMINANCE_TYPE UNSIGNED_CHAR\n";
-        if(iw->depth==2)
-            stream << "LUMINANCE_TYPE UNSIGNED_SHORT\n";
+        if(ui->apType->currentIndex()==0) {
+            stream << "APA LUMINANCE\n";
+            if(iw->depth==0)
+                stream << "LUMINANCE_TYPE UNSIGNED_CHAR\n";
+            if(iw->depth==2)
+                stream << "LUMINANCE_TYPE UNSIGNED_SHORT\n";
         }
         else {
-          stream << "APA RGB\n";
-          if(iw->depth==0)
-              stream << "COLOR_TYPE UNSIGNED_CHAR\n";
-          if(iw->depth==2)
-              stream << "COLOR_TYPE UNSIGNED_SHORT\n";
-          }
+            stream << "APA RGB\n";
+            if(iw->depth==0)
+                stream << "COLOR_TYPE UNSIGNED_CHAR\n";
+            if(iw->depth==2)
+                stream << "COLOR_TYPE UNSIGNED_SHORT\n";
+        }
 
         if(flag_dir==0){
             stream << "DIR_TYPE constant\n";
@@ -3178,20 +3287,20 @@ void RTITool::on_saveAPA_clicked()
 
         stream << "CHROMA_IMAGE ";
         if (flag_chr==1) {
-                  stream << chrname.toLatin1() << "\n";
-    }
+            stream << chrname.toLatin1() << "\n";
+        }
         else {
             stream <<"none" << "\n";
-    }
+        }
 
 
         stream << "CHROMAX_IMAGE ";
         if (flag_chr==1) {
-                  stream << chrname2.toLatin1() << "\n";
-    }
+            stream << chrname2.toLatin1() << "\n";
+        }
         else {
             stream <<"none" << "\n";
-    }
+        }
 
 
         QListWidgetItem *item = ui->listWidget->item(0);
@@ -3213,10 +3322,10 @@ void RTITool::on_saveAPA_clicked()
         {
             item = ui->listWidget->item(row);
             if(ax>0)
-                stream << "CROPPED" << file_pref.toLatin1() << "/cropped" << QString::number(row).toLatin1() << ".tif" <<"\n";
+                stream <<  file_pref.toLatin1() << QDir::separator() << "cropped" << QString::number(row).toLatin1() << ".tif" <<"\n";
             else{
                 if(flag_corr==1)
-                    stream << "CORR_IMG/corrected" << QString::number(row).toLatin1() << ".tif" <<"\n";
+                    stream << "CORR_IMG" << QDir::separator() << "corrected" << QString::number(row).toLatin1() << ".tif" <<"\n";
                 else
                     stream << " " <<  item->text().toLatin1() <<"\n";
             }
@@ -3298,318 +3407,324 @@ void RTITool::on_saveAPA_clicked()
         unsigned char val;
         // open appearance profile
         if (flag_binary==1){
-        ofstream outfile (binname.toLatin1(), ios::out | ios::binary);
+            ofstream outfile (binname.toLatin1(), ios::out | ios::binary);
 
-        Mat image, gim, cim, cim2, aim, mim;
-
-
-        // allocate fixed matrix (method 1)
-        unsigned char* matr;
-        unsigned short* matrs;
-        int sizem;
-        float* difcol;
-        double* aim2;
+            Mat image, gim, cim, cim2, aim, mim;
 
 
-        Rect roi;
-
-        if(ax > 0) {//cropped
-            roi.x=ax;
-            roi.y=ay;
-            roi.width=sx;
-            roi.height=sy;
-         if(ui->apType->currentIndex()==0){
-            aim2=new double[sy*sx*3];
-            if(!aim2) qDebug() << "error allocating";
+            // allocate fixed matrix (method 1)
+            unsigned char* matr;
+            unsigned short* matrs;
+            int sizem;
+            float* difcol;
+            double* aim2;
 
 
-            for(int i=0;i<sx;i++)
-                for(int j=0;j<sy;j++){
-                    for(int k=0;k<3;k++)
-                         aim2[(sx*j+i)*3+k] = 0;
+            Rect roi;
+
+            if(ax > 0) {//cropped
+                roi.x=ax;
+                roi.y=ay;
+                roi.width=sx;
+                roi.height=sy;
+                if(ui->apType->currentIndex()==0){
+                    aim2=new double[sy*sx*3];
+                    if(!aim2) qDebug() << "error allocating";
+
+
+                    for(int i=0;i<sx;i++)
+                        for(int j=0;j<sy;j++){
+                            for(int k=0;k<3;k++)
+                                aim2[(sx*j+i)*3+k] = 0;
+                        }
                 }
-            }
 
-            if(iw->depth==0){
-                matr = new unsigned char[sx*sy*ui->listWidget->count()];
-                sizem=sx*sy*ui->listWidget->count();
-            }
-            if(iw->depth==2){
-                matrs = new unsigned short[sx*sy*ui->listWidget->count()];
-                sizem=sx*sy*ui->listWidget->count();
-            }
-
-        }
-        else
-        {
-
-            sx=iw->s.width();
-            sy=iw->s.height();
-            roi.x=0;
-            roi.y=0;
-            roi.width=sx;
-            roi.height=sy;
-
-            if(ui->apType->currentIndex()==0){
-            aim2=new double[sx*sy*3];
-
-            for(int i=0;i<sx;i++)
-                for(int j=0;j<sy;j++){
-                    for(int k=0;k<3;k++)
-                         aim2[(sx*j+i)*3+k] = 0;
+                if(iw->depth==0){
+                    matr = new unsigned char[sx*sy*ui->listWidget->count()];
+                    sizem=sx*sy*ui->listWidget->count();
                 }
-            }
-
-            if(iw->depth==0){
-                matr = new unsigned char[iw->s.width()*iw->s.height()*ui->listWidget->count()];
-                sizem= iw->s.width()*iw->s.height()*ui->listWidget->count();
-            }
-            if(iw->depth==2) {
-                matrs = new unsigned short[iw->s.width()*iw->s.height()*ui->listWidget->count()];
-                sizem=iw->s.width()*iw->s.height()*ui->listWidget->count();
-            }
-        }
-
-        unsigned char* ptr;
-        unsigned short* ptr16;
-
-          if(ui->apType->currentIndex()==0) {
-
-        Mat crim2(sy,sx,CV_8UC3,cv::Scalar(0,0,0));
-
-        // loop over images
-        for(int row = 0; row < ui->listWidget->count(); row++)
-        {
-            item = ui->listWidget->item(row);
-            if(flag_corr==0){
-                if(!iw->force8bit)
-                    image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
-                else
-                    image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
-            }
-            //  image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
-            else {
-                QString cname="CORR_IMG/corrected" + QString::number(row) +".tif";
-                if(!iw->force8bit)
-                    image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
-                else
-                    image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR);
-            }
-
-            if(! image.data )                              // Check for invalid input
-               {
-                ui->msgBox->append("Error: no corrected images available");
-                return;
-               }
-
-
-                cim = image(roi);
-
-                QString cropname = QString("CROPPED") + file_pref + QString("/cropped") + QString::number(row) + ".tif";
-
-                if(!QDir(QString("CROPPED") + file_pref).exists())
-                    QDir().mkdir(QString("CROPPED") + file_pref);
-
-                if(ax > 0)
-                    imwrite(cropname.toStdString(),cim);
-
-                if(iw->depth==0)
-                cv::max(crim2, cim, crim2);
-
                 if(iw->depth==2){
-                    cim.convertTo(cim2, CV_8UC3, 0.00390625);
-                    cv::max(crim2, cim2, crim2);
+                    matrs = new unsigned short[sx*sy*ui->listWidget->count()];
+                    sizem=sx*sy*ui->listWidget->count();
+                }
+
+            }
+            else
+            {
+
+                sx=iw->s.width();
+                sy=iw->s.height();
+                roi.x=0;
+                roi.y=0;
+                roi.width=sx;
+                roi.height=sy;
+
+                if(ui->apType->currentIndex()==0){
+                    aim2=new double[sx*sy*3];
+
+                    for(int i=0;i<sx;i++)
+                        for(int j=0;j<sy;j++){
+                            for(int k=0;k<3;k++)
+                                aim2[(sx*j+i)*3+k] = 0;
+                        }
+                }
+
+                if(iw->depth==0){
+                    matr = new unsigned char[iw->s.width()*iw->s.height()*ui->listWidget->count()];
+                    sizem= iw->s.width()*iw->s.height()*ui->listWidget->count();
+                }
+                if(iw->depth==2) {
+                    matrs = new unsigned short[iw->s.width()*iw->s.height()*ui->listWidget->count()];
+                    sizem=iw->s.width()*iw->s.height()*ui->listWidget->count();
+                }
+            }
+
+            unsigned char* ptr;
+            unsigned short* ptr16;
+
+            if(ui->apType->currentIndex()==0) {
+
+                Mat crim2(sy,sx,CV_8UC3,cv::Scalar(0,0,0));
+
+                // loop over images
+                for(int row = 0; row < ui->listWidget->count(); row++)
+                {
+                    item = ui->listWidget->item(row);
+                    QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+
+                    QString cname;
+
+                    if(flag_corr==0){
+                        if(!iw->force8bit)
+                            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+                        else
+                            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
+                    }
+                    //  image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+                    else {
+                        cname =  ui->folderName->text() + QDir::separator()  + "CORR_IMG" + QDir::separator()  + "corrected" + QString::number(row) +".tif";
+                        if(!iw->force8bit)
+                            image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+                        else
+                            image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR);
+                    }
+
+                    if(! image.data )                              // Check for invalid input
+                    {
+                        ui->msgBox->append("Error: no corrected images available");
+                        qDebug() << cname;
+                        return;
                     }
 
 
-                if(iw->depth==0){
-                    for(int i=0;i<sx;i++)
-                        for(int j=0;j<sy;j++){
-                            matr[sx*ui->listWidget->count()*j+ui->listWidget->count()*i+row]=(unsigned char)(0.2126*cim.at<Vec3b>(Point(i,j))[2] + 0.7152*cim.at<Vec3b>(Point(i,j))[1]  + 0.0722*cim.at<Vec3b>(Point(i,j))[0]);
+                    cim = image(roi);
 
-                           for(int k=0;k<3;k++)
-                                aim2[(sx*j+i)*3+k] = aim2[(sx*j+i)*3+k] + (double)cim.at<Vec3b>(Point(i,j))[k];
-                        }
-                }
+                    QString cropname =  ui->folderName->text() + QDir::separator()  + file_pref + QDir::separator() + QString("cropped") + QString::number(row) + ".tif";
+
+                    if(!QDir( ui->folderName->text() + QDir::separator()  + QString("CROPPED") + file_pref).exists())
+                        QDir().mkdir( ui->folderName->text() + QDir::separator()  + QString("CROPPED") + file_pref);
+
+                    if(ax > 0)
+                        imwrite(cropname.toStdString(),cim);
+
+                    if(iw->depth==0)
+                        cv::max(crim2, cim, crim2);
+
+                    if(iw->depth==2){
+                        cim.convertTo(cim2, CV_8UC3, 0.00390625);
+                        cv::max(crim2, cim2, crim2);
+                    }
 
 
-                if(iw->depth==2){
-                    unsigned short* ptr=(unsigned short*) (cim.data);
+                    if(iw->depth==0){
+                        for(int i=0;i<sx;i++)
+                            for(int j=0;j<sy;j++){
+                                matr[sx*ui->listWidget->count()*j+ui->listWidget->count()*i+row]=(unsigned char)(0.2126*cim.at<Vec3b>(Point(i,j))[2] + 0.7152*cim.at<Vec3b>(Point(i,j))[1]  + 0.0722*cim.at<Vec3b>(Point(i,j))[0]);
 
-                    for(int i=0;i<sx;i++)
-                        for(int j=0;j<sy;j++){
-                            matrs[sx*ui->listWidget->count()*j+ui->listWidget->count()*i+row]=(unsigned short)(0.2126*cim.at<Vec<unsigned short, 3> >(Point(i,j))[2] + 0.7152*cim.at<Vec<unsigned short, 3> >(Point(i,j))[1]  + 0.0722*cim.at<Vec<unsigned short, 3> >(Point(i,j))[0]);
+                                for(int k=0;k<3;k++)
+                                    aim2[(sx*j+i)*3+k] = aim2[(sx*j+i)*3+k] + (double)cim.at<Vec3b>(Point(i,j))[k];
+                            }
+                    }
+
+
+                    if(iw->depth==2){
+                        unsigned short* ptr=(unsigned short*) (cim.data);
+
+                        for(int i=0;i<sx;i++)
+                            for(int j=0;j<sy;j++){
+                                matrs[sx*ui->listWidget->count()*j+ui->listWidget->count()*i+row]=(unsigned short)(0.2126*cim.at<Vec<unsigned short, 3> >(Point(i,j))[2] + 0.7152*cim.at<Vec<unsigned short, 3> >(Point(i,j))[1]  + 0.0722*cim.at<Vec<unsigned short, 3> >(Point(i,j))[0]);
 
 
                                 for(int k=0;k<3;k++)
-                                aim2[(sx*j+i)*3+k] = aim2[(sx*j+i)*3+k] + (double)cim.at<Vec<unsigned short, 3> >(Point(i,j))[k];
+                                    aim2[(sx*j+i)*3+k] = aim2[(sx*j+i)*3+k] + (double)cim.at<Vec<unsigned short, 3> >(Point(i,j))[k];
+
+                            }
+                    }
+
+
+                    if(ax>0)
+                        cim.release();
+
+                    image.release();
+                }
+
+                /* write data and chroma image */
+                if(iw->depth==0){
+
+                    outfile.write((char*)&matr[0],sizem*sizeof(unsigned char));
+                    delete matr;
+                    outfile.close();
+
+                    Mat crim(sy,sx,CV_8UC3);
+
+
+                    Vec3f val;
+                    for(int i=0;i<sx;i++)
+                        for(int j=0; j<sy;j++){
+
+                            for(int k=0;k<3;k++)
+                                val.val[k]=aim2[(sx*j+i)*3+k]/(float)ui->listWidget->count();
+
+                            float sum=val.val[0]+val.val[1]+val.val[2];
+                            if(sum>0)
+                                val = val;//255*val/sum;
+                            else
+                                val=0;
+
+                            crim.at<Vec3b>(j,i) = val;
+                        }
+
+                    imwrite(chrname.toStdString(),crim);
+
+                    imwrite(chrname2.toStdString(),crim2);
+
+
+                }
+
+                if(iw->depth==2){
+                    outfile.write((char*)&matrs[0],sizem*sizeof(unsigned short));
+                    delete matrs;
+                    outfile.close();
+                    Mat crim(sy,sx,CV_16UC3);
+                    qDebug() << "qui " << sx << " " << sy;
+
+                    Vec3f val;
+                    int i,j, k;
+                    double sum;
+
+                    for(i=0;i<sx;i++)
+                        for(j=0; j<sy;j++){
+
+                            for(int k=0;k<3;k++)
+                                val.val[k]=aim2[(sx*j+i)*3+k]/(float)ui->listWidget->count();
+
+                            sum= val.val[0]+val.val[1]+val.val[2];
+                            if(sum > 0)
+                                val = val;//65535*(val/sum);
+                            else
+                                val=0;
+
+                            crim.at<Vec<unsigned short, 3> >(j,i) = val;
 
                         }
+
+                    imwrite(chrname.toStdString(),crim);
+                    imwrite(chrname2.toStdString(),crim2);
+                }
+
+                delete aim2;
+            }
+            else{
+                // RGB
+                for(int cc=0; cc<3;cc++){
+
+                    // loop over images
+                    for(int row = 0; row < ui->listWidget->count(); row++)
+                    {
+                        item = ui->listWidget->item(row);
+                        QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+                        if(flag_corr==0){
+                            if(!iw->force8bit)
+                                image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+                            else
+                                image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
+                        }
+                        //  image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+                        else {
+                            QString cname=ui->folderName->text() + QDir::separator()  +"CORR_IMG/corrected" + QString::number(row) +".tif";
+                            if(!iw->force8bit)
+                                image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+                            else
+                                image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR);
+                        }
+
+                        if(! image.data )                              // Check for invalid input
+                        {
+                            ui->msgBox->append("Error: no corrected images available");
+                            return;
+                        }
+
+
+                        cim = image(roi);
+                        QString cropname = ui->folderName->text() + QDir::separator()  + QString("CROPPED") + file_pref + QString("/cropped") + QString::number(row) + ".tif";
+
+                        if(!QDir(QString(ui->folderName->text() + QDir::separator()  +"CROPPED") + file_pref).exists())
+                            QDir().mkdir(QString(ui->folderName->text() + QDir::separator()  +"CROPPED") + file_pref);
+
+                        if(ax > 0)
+                            imwrite(cropname.toStdString(),cim);
+
+
+                        if(iw->depth==0){
+                            for(int i=0;i<sx;i++)
+                                for(int j=0;j<sy;j++){
+                                    matr[sx*ui->listWidget->count()*j+ui->listWidget->count()*i+row]=(unsigned char)cim.at<Vec3b>(Point(i,j))[2-cc];
+                                }
+                        }
+
+
+                        if(iw->depth==2){
+                            unsigned short* ptr=(unsigned short*) (cim.data);
+
+                            for(int i=0;i<sx;i++)
+                                for(int j=0;j<sy;j++){
+                                    matrs[sx*ui->listWidget->count()*j+ui->listWidget->count()*i+row]=(unsigned short)(cim.at<Vec<unsigned short, 3> >(Point(i,j))[2-cc]);
+
+                                }
+                        }
+
+
+                        if(ax>0)
+                            cim.release();
+
+                        image.release();
+                    }
+
+                    /* write data */
+                    if(iw->depth==0){
+
+                        outfile.write((char*)&matr[0],sizem*sizeof(unsigned char));
+                        // delete matr;
+                        //  outfile.close();
+
+
+                    }
+
+                    if(iw->depth==2){
+                        outfile.write((char*)&matrs[0],sizem*sizeof(unsigned short));
+                        //delete matrs;
+                        //outfile.close();
+
+
+                    }
+                }
+
+
+
             }
 
-
-            if(ax>0)
-                cim.release();
-
-            image.release();
         }
-
-        /* write data and chroma image */
-        if(iw->depth==0){
-
-            outfile.write((char*)&matr[0],sizem*sizeof(unsigned char));
-            delete matr;
-            outfile.close();
-
-            Mat crim(sy,sx,CV_8UC3);
-
-
-            Vec3f val;
-            for(int i=0;i<sx;i++)
-                for(int j=0; j<sy;j++){
-
-                    for(int k=0;k<3;k++)
-                        val.val[k]=aim2[(sx*j+i)*3+k]/(float)ui->listWidget->count();
-
-                    float sum=val.val[0]+val.val[1]+val.val[2];
-                    if(sum>0)
-                        val = val;//255*val/sum;
-                    else
-                        val=0;
-
-                    crim.at<Vec3b>(j,i) = val;
-                }
-
-            imwrite(chrname.toStdString(),crim);
-
-            imwrite(chrname2.toStdString(),crim2);
-
-
-        }
-
-        if(iw->depth==2){
-            outfile.write((char*)&matrs[0],sizem*sizeof(unsigned short));
-            delete matrs;
-            outfile.close();
-            Mat crim(sy,sx,CV_16UC3);
-            qDebug() << "qui " << sx << " " << sy;
-
-            Vec3f val;
-            int i,j, k;
-            double sum;
-
-            for(i=0;i<sx;i++)
-                for(j=0; j<sy;j++){
-
-                    for(int k=0;k<3;k++)
-                        val.val[k]=aim2[(sx*j+i)*3+k]/(float)ui->listWidget->count();
-
-                    sum= val.val[0]+val.val[1]+val.val[2];
-                    if(sum > 0)
-                        val = val;//65535*(val/sum);
-                    else
-                        val=0;
-
-                    crim.at<Vec<unsigned short, 3> >(j,i) = val;
-
-                }
-
-            imwrite(chrname.toStdString(),crim);
-
-        }
-
-        delete aim2;
-        }
-            else{
-          // RGB
-          for(int cc=0; cc<3;cc++){
-
-              // loop over images
-              for(int row = 0; row < ui->listWidget->count(); row++)
-              {
-                  item = ui->listWidget->item(row);
-                  if(flag_corr==0){
-                      if(!iw->force8bit)
-                          image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
-                      else
-                          image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
-                  }
-                  //  image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
-                  else {
-                      QString cname="CORR_IMG/corrected" + QString::number(row) +".tif";
-                      if(!iw->force8bit)
-                          image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
-                      else
-                          image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR);
-                  }
-
-                  if(! image.data )                              // Check for invalid input
-                     {
-                      ui->msgBox->append("Error: no corrected images available");
-                      return;
-                     }
-
-
-                      cim = image(roi);
-                      QString cropname = QString("CROPPED") + file_pref + QString("/cropped") + QString::number(row) + ".tif";
-
-                      if(!QDir(QString("CROPPED") + file_pref).exists())
-                          QDir().mkdir(QString("CROPPED") + file_pref);
-
-                      if(ax > 0)
-                          imwrite(cropname.toStdString(),cim);
-
-
-                      if(iw->depth==0){
-                          for(int i=0;i<sx;i++)
-                              for(int j=0;j<sy;j++){
-                                  matr[sx*ui->listWidget->count()*j+ui->listWidget->count()*i+row]=(unsigned char)cim.at<Vec3b>(Point(i,j))[2-cc];
-                        }
-                      }
-
-
-                      if(iw->depth==2){
-                          unsigned short* ptr=(unsigned short*) (cim.data);
-
-                          for(int i=0;i<sx;i++)
-                              for(int j=0;j<sy;j++){
-                                  matrs[sx*ui->listWidget->count()*j+ui->listWidget->count()*i+row]=(unsigned short)(cim.at<Vec<unsigned short, 3> >(Point(i,j))[2-cc]);
-
-                              }
-                  }
-
-
-                  if(ax>0)
-                      cim.release();
-
-                  image.release();
-              }
-
-              /* write data */
-              if(iw->depth==0){
-
-                  outfile.write((char*)&matr[0],sizem*sizeof(unsigned char));
-                 // delete matr;
-                //  outfile.close();
-
-
-              }
-
-              if(iw->depth==2){
-                  outfile.write((char*)&matrs[0],sizem*sizeof(unsigned short));
-                  //delete matrs;
-                  //outfile.close();
-
-
-                  }
-          }
-
-
-
-          }
-
     }
-}
 
 
 
@@ -3800,42 +3915,52 @@ void RTITool::on_box8Bit_toggled(bool checked)
 }
 
 
-
-void RTITool::on_loadListButton_clicked()
+void RTITool::loadList(QString fileName)
 {
-
-    QString fileName;
-    fileName = QFileDialog::getOpenFileName(this,
-                                            tr("Open image list"));
-
     QFile file(fileName);
+
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    QFileInfo fi = QFileInfo(file);
-    qDebug(fileName.toLatin1());
+    // QFileInfo fi = QFileInfo(file);
+    // qDebug(fileName.toLatin1());
     QStringList  nList;
 
-    int last= fileName.lastIndexOf("/");
+    int last= fileName.lastIndexOf(QDir::separator());
     QString folder=fileName.left(last+1);
 
+    QProgressDialog progress("Importing files please wait...", "", 0, 100, this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setValue(0);
+    progress.setCancelButton(0);
+    progress.setWindowTitle("Progress Dialog");
+    progress.show( );
+
     QTextStream textStream(&file);
+    int ni=0;
     while (true)
     {
+        ni++;
         QString line = textStream.readLine();
+        last= line.lastIndexOf(QDir::separator());
+        QString lastname=line.right(line.size()-last-1);
+
+        progress.setValue(ni);
 
         qDebug(line.toLatin1());
         if (line.isNull())
             break;
-        else
-            nList.append(line);
-
+        else{
+            nList.append(lastname);
+            QString dstImg=ui->folderName->text() + QDir::separator() + "images"+ QDir::separator() + lastname;
+            QFile::copy(line,dstImg);
+        }
     }
     file.close();
     ui->listWidget->clear();
     ui->listWidget->addItems( nList );
 
-    iw->load(ui->listWidget->item(0)->text());
+    iw->load(ui->folderName->text() + QDir::separator()  + "images" + QDir::separator()  + ui->listWidget->item(0)->text());
     iw->show();
 
     QString msg = "Loaded list file with " + QString::number(ui->listWidget->count()) + " images";
@@ -3845,17 +3970,29 @@ void RTITool::on_loadListButton_clicked()
 
 
     QApplication::processEvents();
+
 }
 
-void RTITool::on_loadLpButton_clicked()
+void RTITool::on_loadListButton_clicked()
 {
+
     QString fileName;
-    fileName = QFileDialog::getOpenFileName(this,
-                                            tr("Open image list"));
+    fileName = getFilename();
+    if(!fileName.isEmpty())
+        loadList(fileName);
+
+}
+
+void RTITool::loadLp(QString fileName)
+{
 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
+
+    QString folder = ui->folderName->text();
+    QFile outfile(folder + "file.lp");
+
 
     qDebug(fileName.toLatin1());
     QStringList  nList;
@@ -3864,8 +4001,8 @@ void RTITool::on_loadLpButton_clicked()
 
     QTextStream textStream(&file);
 
-
     QString line = textStream.readLine();
+
     if (line.isNull())
         return;
     QStringList parts = line.split(" ");
@@ -3932,43 +4069,44 @@ void RTITool::on_loadLpButton_clicked()
         if (line.isNull())
             break;
         QStringList   parts = line.split(" ");
-       // qDebug() << line;
-       // qDebug() << i << " " <<  parts[0];
+        // qDebug() << line;
+        // qDebug() << i << " " <<  parts[0];
         ui->listWidget->addItem( parts[0] );
-if(type==0){
-       double* vec=new double[3];
-
-        vec[0] = parts[1].toDouble();
-        vec[1] = parts[2].toDouble();
-        vec[2] = parts[3].toDouble();
-        float norm=sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
-        vec[0] = vec[0]/norm;
-        vec[1] = vec[1]/norm;
-        vec[2] = vec[2]/norm;
-
-        iw->lights[0].push_back(vec);
-        }
-    else
-        for(int j=0;j<nsph;j++){
+        if(type==0){
             double* vec=new double[3];
 
-            vec[0] = parts[j*3+1].toDouble();
-            vec[1] = parts[j*3+2].toDouble();
-            vec[2] = parts[j*3+3].toDouble();
+            vec[0] = parts[1].toDouble();
+            vec[1] = parts[2].toDouble();
+            vec[2] = parts[3].toDouble();
             float norm=sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
             vec[0] = vec[0]/norm;
             vec[1] = vec[1]/norm;
             vec[2] = vec[2]/norm;
 
-            iw->lights[j].push_back(vec);
-           // qDebug() << "l " << (iw->lights[j].at(i))[0] << (iw->lights[j].at(i))[1] << (iw->lights[j].at(i))[2];
+            iw->lights[0].push_back(vec);
         }
+        else
+            for(int j=0;j<nsph;j++){
+                double* vec=new double[3];
+
+                vec[0] = parts[j*3+1].toDouble();
+                vec[1] = parts[j*3+2].toDouble();
+                vec[2] = parts[j*3+3].toDouble();
+                float norm=sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
+                vec[0] = vec[0]/norm;
+                vec[1] = vec[1]/norm;
+                vec[2] = vec[2]/norm;
+
+                iw->lights[j].push_back(vec);
+                // qDebug() << "l " << (iw->lights[j].at(i))[0] << (iw->lights[j].at(i))[1] << (iw->lights[j].at(i))[2];
+            }
 
     }
 
     file.close();
 
-    iw->load(ui->listWidget->item(0)->text());
+
+    iw->load(ui->folderName->text() + QDir::separator()  +"images"  + QDir::separator() + ui->listWidget->item(0)->text());
     iw->show();
 
     if(type==1){
@@ -4068,7 +4206,7 @@ if(type==0){
 
             QPixmap pixmap((int)((float)(2*max(ry[i],radii[i]))*iw->scaleFactor+1),(int)((float)(2*max(ry[i],radii[i]))*iw->scaleFactor)+1);
             pixmap.fill(QColor("transparent"));
-           // iw->ls[i]->setScaledContents(true);;;
+            // iw->ls[i]->setScaledContents(true);;;
             QPainter painter(&pixmap);
 
             // qDebug() << iw->origins[i].x() <<  "or " << iw->origins[i].y() << iw->radius[i];
@@ -4104,21 +4242,37 @@ if(type==0){
 
     QString msg = "Loaded lp file with " + QString::number(ui->listWidget->count()) + " images";
     ui->msgBox->setText(msg);
-   if(type==0)
+    if(type==0)
         ui->direLab->setText(QString("Ok"));
     else
-    ui->direLab->setText(QString("Ok "+  QString::number(nsph)));
+        ui->direLab->setText(QString("Ok "+  QString::number(nsph)));
     if(iw->depth==0) ui->msgBox->append("8 bit depth");
     if(iw->depth==2) ui->msgBox->append("16 bit depth");
 
     if(type==0)
-         msg = "and precomputed light directions";
-        else
+        msg = "and precomputed light directions";
+    else
         msg = "and " + QString::number(nsph) + " light directions";
+
 
     ui->msgBox->append(msg);
     QApplication::processEvents();
-    qDebug() << ">>>" << iw->radius[0] << " " << iw->cx[0];
+    //qDebug() << ">>>" << iw->radius[0] << " " << iw->cx[0];
+
+    if(nsph>2) on_interpDir_clicked();
+
+    outfile.close();
+
+}
+
+void RTITool::on_loadLpButton_clicked()
+{
+    QString fileName;
+    fileName = QFileDialog::getOpenFileName(this,
+                                            tr("Open lp file"));
+
+    loadLp(fileName);
+
 }
 
 void RTITool::on_removeAmbientButton_clicked(){
@@ -4128,18 +4282,22 @@ void RTITool::on_removeAmbientButton_clicked(){
     QString ambientImageFileName;
 
     ambientImageFileName = QFileDialog::getOpenFileName(this,
-                                            tr("Load image with ambient lighting"));
+                                                        tr("Load image with ambient lighting"));
 
 
     cv::Mat imageAmbient = imread(ambientImageFileName.toStdString(),CV_LOAD_IMAGE_ANYDEPTH|CV_LOAD_IMAGE_COLOR);
     cv::Mat image;
+
+
 
     //subtract ambient from each image in the list.
     for(int row = 0; row < ui->listWidget->count(); row++)
     {
         //load image from the list
         QListWidgetItem *item = ui->listWidget->item(row);
-        std::string originalImageName = item->text().toStdString();
+        QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+        std::string originalImageName = filen.toStdString();
+        //  std::string originalImageName = item->text().toStdString();
         image = imread(originalImageName,CV_LOAD_IMAGE_ANYDEPTH|CV_LOAD_IMAGE_COLOR);
 
         qDebug() << "----- Subtracting ambient from image - " << QString::fromStdString(originalImageName) << "...";
@@ -4156,27 +4314,31 @@ void RTITool::on_removeAmbientButton_clicked(){
         int type = imageAmbient.type();
         switch (type) {
         case CV_16UC3: {
-          for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-          cv::Vec<u_int16_t,3> pixel   = image.at<cv::Vec<u_int16_t,3> >(i,j);
+            for (int i = 0; i < height; ++i) {
+                for (int j = 0; j < width; ++j) {
+                    cv::Vec<u_int16_t,3> pixel   = image.at<cv::Vec<u_int16_t,3> >(i,j);
 
-          cv::Vec<u_int16_t,3> ambient = imageAmbient.at<cv::Vec<u_int16_t,3> >(i,j);
-          for (int k = 0; k < 3; ++k) {
-              (pixel[k] > ambient[k]) ? pixel[k] = pixel[k]-ambient[k] : pixel[k] = 0;
-          }
+                    cv::Vec<u_int16_t,3> ambient = imageAmbient.at<cv::Vec<u_int16_t,3> >(i,j);
+                    for (int k = 0; k < 3; ++k) {
+                        (pixel[k] > ambient[k]) ? pixel[k] = pixel[k]-ambient[k] : pixel[k] = 0;
+                    }
 
-          image.at<cv::Vec<u_int16_t,3> >(i,j) = pixel;
+                    image.at<cv::Vec<u_int16_t,3> >(i,j) = pixel;
+                }
             }
-          }
-          std::string imageCorrectedName = originalImageName.substr(0,originalImageName.size()-5);
-          imageCorrectedName.append("_af.tiff");
-          qDebug()<< "----- Writing ambient free image - " << QString::fromStdString(imageCorrectedName) << "\n";
-          cv::imwrite(imageCorrectedName,image);
-          //change the item name in the list
-          ui->listWidget->item(row) ->setText(QString::fromStdString(imageCorrectedName));
+
+            int last= filen.lastIndexOf(".");
+            QString common=filen.left(last);
+            QString cn = common + "_af.tiff";
+            std::string   imageCorrectedName = cn.toStdString();
+            qDebug()<< "----- Writing ambient free image - " << QString::fromStdString(imageCorrectedName) << "\n";
+            cv::imwrite(imageCorrectedName,image);
+            //change the item name in the list
+            ui->listWidget->item(row) ->setText(QString::fromStdString(imageCorrectedName));
+
         } break;
         default: {
-          qDebug() << "Unknown image type " << type << " (The only supported image type is CV_16UC3)" << "\n";
+            qDebug() << "Unknown image type " << type << " (The only supported image type is CV_16UC3)" << "\n";
         } break;
         }
 
@@ -4192,15 +4354,17 @@ void RTITool::on_removeAmbientButton_clicked(){
     if(iw->depth==0) ui->msgBox->append("8 bit depth");
     if(iw->depth==2) ui->msgBox->append("16 bit depth");
 
-    QFile file("list_ar.txt");
-    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+
+    QFile lfile(ui->folderName->text() + QDir::separator() + "list.txt");
+
+    if (!lfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qDebug() << "error";
     }
     else{
-        QTextStream stream( &file );
+        QTextStream out(&lfile);
         for(int row = 0; row < ui->listWidget->count(); row++)
         {
-            stream << ui->listWidget->item(row)->text();
+            out << ui->listWidget->item(row)->text() << endl;;
         }
     }
 
@@ -4214,6 +4378,8 @@ void RTITool::on_undistortImagesButton_clicked(){
 
     cv::Mat image;
     QMessageBox messageBox;
+
+
 
     if (ui->listWidget->count() == 0){
         qDebug() << "error";
@@ -4237,31 +4403,44 @@ void RTITool::on_undistortImagesButton_clicked(){
     }
 
     QString originalImageName;
-     QString undistortedImageName;
+    QString undistortedImageName;
+
+    QProgressDialog progress("Importing files please wait...", "", 0, ui->listWidget->count(), this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setValue(0);
+    progress.setCancelButton(0);
+    progress.setWindowTitle("Progress Dialog");
+    progress.show( );
+    QCoreApplication::processEvents();
 
     for(int row = 0; row < ui->listWidget->count(); row++)
     {
         QListWidgetItem *item = ui->listWidget->item(row);
         originalImageName = item->text();
         
+        progress.setValue(row);
+
         int last= originalImageName.lastIndexOf(".");
-        QString common=originalImageName.left(last+1);
+        QString common=originalImageName.left(last);
+
         undistortedImageName = common + "_und.tiff";
-        cv::Mat image = imread(originalImageName.toStdString(),CV_LOAD_IMAGE_ANYDEPTH|CV_LOAD_IMAGE_COLOR);
+
+        QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+        cv::Mat image = imread(filen.toStdString(),CV_LOAD_IMAGE_ANYDEPTH|CV_LOAD_IMAGE_COLOR);
         cv::Mat image_und;
-        qDebug() << "----- Undistorting image - " << originalImageName << "...";
+        qDebug() << "----- Undistorting image - " << filen << "...";
         cv::undistort(image,image_und,iw->cameraMatrix,iw->distCoeffs);
         qDebug() <<"\nDistance coeff"<<iw->distCoeffs.at<double>(0,0)<< iw->distCoeffs.at<double>(1,0)<<"  "<<iw->distCoeffs.at<double>(2,0)<<"  "<<iw->distCoeffs.at<double>(3,0)<<"  ";
 
-         qDebug() << undistortedImageName;
-        cv::imwrite(undistortedImageName.toStdString(),image_und);
+        QString outn = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + undistortedImageName;
+        cv::imwrite(outn.toStdString(),image_und);
         ui->listWidget->item(row) ->setText(undistortedImageName);
         image.release();
         image_und.release();
     }
     
     //reload the undistorted images
-    iw->load(ui->listWidget->item(0)->text());
+    iw->load(ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + ui->listWidget->item(0)->text());
     iw->show();
 
     QString msg = "Reloaded the image list with undistortion corrected!";
@@ -4269,7 +4448,9 @@ void RTITool::on_undistortImagesButton_clicked(){
     if(iw->depth==0) ui->msgBox->append("8 bit depth");
     if(iw->depth==2) ui->msgBox->append("16 bit depth");
 
-    QFile file("list_ud.txt");
+
+
+    QFile file(ui->folderName->text() + QDir::separator()  + "list.txt");
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
         qDebug() << "error";
     }
@@ -4277,7 +4458,7 @@ void RTITool::on_undistortImagesButton_clicked(){
         QTextStream stream( &file );
         for(int row = 0; row < ui->listWidget->count(); row++)
         {
-            stream << ui->listWidget->item(row)->text();
+            stream << ui->listWidget->item(row)->text() << endl;
         }
     }
     QApplication::processEvents();
@@ -4285,13 +4466,14 @@ void RTITool::on_undistortImagesButton_clicked(){
 
 }
 
-void RTITool::on_loadCalibButton_clicked()
+void RTITool::loadCalib(QString fileName)
 {
-    QString fileName;
-    fileName = QFileDialog::getOpenFileName(this,
-                                            tr("Open calibration file"));
-
     QFile file(fileName);
+
+    QString dstFile = ui->folderName->text() + QDir::separator()  + "calib.txt";
+
+    QFile::copy(fileName, dstFile);
+
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
@@ -4311,13 +4493,13 @@ void RTITool::on_loadCalibButton_clicked()
         else
             fields = line.split(' ');
 
-//        for(int k=0;k<3;k++)
-//            iw->cameraMatrix.at<double>(k,i) = fields.at(k).toDouble();
+        //        for(int k=0;k<3;k++)
+        //            iw->cameraMatrix.at<double>(k,i) = fields.at(k).toDouble();
 
-//        QString str = QString("%1 %2 %3")
-//                .arg(iw->cameraMatrix.at<double>(0,i),1,'f',2)
-//                .arg(iw->cameraMatrix.at<double>(1,i),1,'f',2)
-//                .arg(iw->cameraMatrix.at<double>(2,i),1,'f',2);
+        //        QString str = QString("%1 %2 %3")
+        //                .arg(iw->cameraMatrix.at<double>(0,i),1,'f',2)
+        //                .arg(iw->cameraMatrix.at<double>(1,i),1,'f',2)
+        //                .arg(iw->cameraMatrix.at<double>(2,i),1,'f',2);
 
         for(int k=0;k<3;k++)
             iw->cameraMatrix.at<double>(i,k) = fields.at(k).toDouble();
@@ -4350,6 +4532,18 @@ void RTITool::on_loadCalibButton_clicked()
 
     ui->intriLab->setText("Loaded");
     file.close();
+
+}
+
+
+void RTITool::on_loadCalibButton_clicked()
+{
+    QString fileName;
+    fileName = QFileDialog::getOpenFileName(this,
+                                            tr("Open calibration file"));
+
+    loadCalib(fileName);
+
 }
 
 
@@ -4670,32 +4864,28 @@ void RTITool::on_angle4spin_valueChanged(double arg1)
 void RTITool::on_prevButton_clicked()
 {
     if( ui->listWidget->selectionModel()->currentIndex().row() >0){
-      int num = ui->listWidget->selectionModel()->currentIndex().row()-1;
- ui->listWidget->setCurrentRow(num);
-      qDebug() << ui->listWidget->item(num)->text();
-    iw->load(ui->listWidget->item(num)->text());
-    iw->show();
+        int num = ui->listWidget->selectionModel()->currentIndex().row()-1;
+        ui->listWidget->setCurrentRow(num);
+        qDebug() << ui->listWidget->item(num)->text();
+        iw->load(ui->folderName->text() + QDir::separator()  + "images" + QDir::separator()  + ui->listWidget->item(num)->text());
+        iw->show();
     }
 }
 
 void RTITool::on_nextButton_clicked()
 {
     if( ui->listWidget->selectionModel()->currentIndex().row() < ui->listWidget->count()-1){
-      int num = ui->listWidget->selectionModel()->currentIndex().row()+1;
-     ui->listWidget->setCurrentRow(num);
-    iw->load(ui->listWidget->item(num)->text());
-     qDebug() << ui->listWidget->item(num)->text();
-    iw->show();
+        int num = ui->listWidget->selectionModel()->currentIndex().row()+1;
+        ui->listWidget->setCurrentRow(num);
+        //iw->load(ui->listWidget->item(num)->text());
+        iw->load(ui->folderName->text() + QDir::separator()  + "images" + QDir::separator()  + ui->listWidget->item(num)->text());
+
+        iw->show();
     }
 }
 
-void RTITool::on_saveIdButton_clicked()
+void RTITool::saveId(QString filename)
 {
-    QString filename = QFileDialog::getSaveFileName(
-                this,
-                tr("File name"),
-                QDir::currentPath(),
-                tr("*.id") );
     QFile file(filename);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
         qDebug() << "error";
@@ -4720,19 +4910,31 @@ void RTITool::on_saveIdButton_clicked()
 
 
 
-                //non cropped
-                stream << "InterpolatedDirections " << ui->listWidget->count() << "\n";
-                for(int i=0;i<ui->listWidget->count();i++){
-                    //   stream << "IMG " << i <<"\n";
-                    if(iw->coilix[0].size()>0)
-                        stream << iw->coilix[0].at(i) << " " << iw->coilix[1].at(i) << " " << iw->coilix[2].at(i) << " " << iw->coiliy[0].at(i) << " " << iw->coiliy[1].at(i) << " " << iw->coiliy[2].at(i) << " " << iw->coiliz[0].at(i) << " " << iw->coiliz[1].at(i) << " " << iw->coiliz[2].at(i) << "\n";
-                }
+        //non cropped
+        stream << "InterpolatedDirections " << ui->listWidget->count() << "\n";
+        for(int i=0;i<ui->listWidget->count();i++){
+            //   stream << "IMG " << i <<"\n";
+            if(iw->coilix[0].size()>0)
+                stream << iw->coilix[0].at(i) << " " << iw->coilix[1].at(i) << " " << iw->coilix[2].at(i) << " " << iw->coiliy[0].at(i) << " " << iw->coiliy[1].at(i) << " " << iw->coiliy[2].at(i) << " " << iw->coiliz[0].at(i) << " " << iw->coiliz[1].at(i) << " " << iw->coiliz[2].at(i) << "\n";
+        }
 
 
 
 
     }
-           file.close();
+    file.close();
+}
+
+void RTITool::on_saveIdButton_clicked()
+{
+    QString filename = QFileDialog::getSaveFileName(
+                this,
+                tr("File name"),
+                QDir::currentPath(),
+                tr("*.id") );
+    saveId(filename);
+
+
 }
 
 void RTITool::on_loadIdButton_clicked()
@@ -4748,11 +4950,16 @@ void RTITool::on_loadIdButton_clicked()
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
+    QString destName = ui->folderName->text() + QDir::separator() + "file.id";
+
+    if (!QFile::copy(fileName, destName))
+        return;
+
     QFileInfo fi = QFileInfo(file);
     qDebug(fileName.toLatin1());
 
     ui->filenameID->setText(fileName);
-    int last= fileName.lastIndexOf("/");
+    int last= fileName.lastIndexOf(QDir::separator());
     QString folder=fileName.left(last+1);
     Vec3f* dirs;
 
@@ -4761,39 +4968,39 @@ void RTITool::on_loadIdButton_clicked()
     {
         QString line = textStream.readLine();
         QStringList parts = line.split(" ");
-         if(parts[0] != QString("InterpolatedDirections"))
-             return;
-         int nimg = parts[1].toInt();
+        if(parts[0] != QString("InterpolatedDirections"))
+            return;
+        int nimg = parts[1].toInt();
 
-         dircoeffs = new float*[nimg];
-         dirs = new Vec3f[nimg];
-            qDebug() << nimg ;
+        dircoeffs = new float*[nimg];
+        dirs = new Vec3f[nimg];
+        qDebug() << nimg ;
 
-            for(int i=0;i<nimg;i++)   {
-               line = textStream.readLine();
-               if (line.isNull()){
-                                      qDebug() << "error";
-                                      return;
-                                  }
+        for(int i=0;i<nimg;i++)   {
+            line = textStream.readLine();
+            if (line.isNull()){
+                qDebug() << "error";
+                return;
+            }
 
-                 parts = line.split(" ");
+            parts = line.split(" ");
 
 
-                                    if(parts.size() < 6){
-                                        qDebug() << "error";
-                                        return;
-                                    }
+            if(parts.size() < 6){
+                qDebug() << "error";
+                return;
+            }
 
-                                    for(int j=0;j<9;j++)
-                                        dircoeffs[i][j] = parts[j].toFloat();
+            for(int j=0;j<9;j++)
+                dircoeffs[i][j] = parts[j].toFloat();
 
-                                    //qDebug() << dircoeffs[i][0] << " " << dircoeffs[i][1] << " " << dircoeffs[i][5];
-                                    float c_x=100;//iw->imageLabel->width()/2;
-                                    float c_y=100;//iw->imageLabel->height()/2;
-//                                    dirs[i][0]=dircoeffs[i][0]*c_x+dircoeffs[i][1]*c_y+dircoeffs[i][2];
-//                                    dirs[i][1]=dircoeffs[i][3]*c_x+dircoeffs[i][4]*c_y+dircoeffs[i][5];
-//                                    dirs[i][2]=dircoeffs[i][6]*c_x+dircoeffs[i][7]*c_y+dircoeffs[i][8];
-//                                    qDebug() << dirs[i][0] << " " << dirs[i][1] << " "  << dirs[i][2];
+            //qDebug() << dircoeffs[i][0] << " " << dircoeffs[i][1] << " " << dircoeffs[i][5];
+            float c_x=100;//iw->imageLabel->width()/2;
+            float c_y=100;//iw->imageLabel->height()/2;
+            //                                    dirs[i][0]=dircoeffs[i][0]*c_x+dircoeffs[i][1]*c_y+dircoeffs[i][2];
+            //                                    dirs[i][1]=dircoeffs[i][3]*c_x+dircoeffs[i][4]*c_y+dircoeffs[i][5];
+            //                                    dirs[i][2]=dircoeffs[i][6]*c_x+dircoeffs[i][7]*c_y+dircoeffs[i][8];
+            //                                    qDebug() << dirs[i][0] << " " << dirs[i][1] << " "  << dirs[i][2];
 
 
         }
@@ -4809,6 +5016,10 @@ void RTITool::on_loadCalimButton_clicked()
 
     bList.clear();
 
+
+    if(!QDir(ui->folderName->text() + QDir::separator() +"CAL_IMG").exists())
+        QDir().mkdir(ui->folderName->text() + QDir::separator() +"CAL_IMG");
+
     QString fileName;
     fileName = QFileDialog::getOpenFileName(this,
                                             tr("Open interp. directions file"));
@@ -4818,32 +5029,450 @@ void RTITool::on_loadCalimButton_clicked()
         return;
 
     QFileInfo fi = QFileInfo(file);
-    qDebug(fileName.toLatin1());
 
-    ui->filenameID->setText(fileName);
-    int last= fileName.lastIndexOf("/");
-    QString folder=fileName.left(last+1);
 
+    QProgressDialog progress("Importing files please wait...", "", 0, 100, this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setValue(0);
+    progress.setCancelButton(0);
+    progress.setWindowTitle("Progress Dialog");
+    progress.show( );
+
+
+    /*ui->filenameID->setText(fileName);*/
+    int last= fileName.lastIndexOf(QDir::separator());
+    /* QString folder=fileName.left(last+1);*/
+    int ni=0;
     QTextStream textStream(&file);
     while (true)
     {
+
+        ni++;
+        progress.setValue(ni);
         QString line = textStream.readLine();
+        last= line.lastIndexOf(QDir::separator());
+        QString lastname=line.right(line.size()-last-1);
         qDebug(line.toLatin1());
         if (line.isNull())
             break;
         else
             bList.append(line);
+
+        QString dstImg=ui->folderName->text() + QDir::separator() + "CAL_IMG"+ QDir::separator() + lastname;
+        QFile::copy(line,dstImg);
     }
     file.close();
 
 
-if(bList.size() != ui->listWidget->count())
-    ui->msgBox->append("ERROR");
+    if(bList.size() != ui->listWidget->count())
+        ui->msgBox->append("ERROR");
 
 
 }
 
 void RTITool::on_corrBackimgBut_clicked()
 {
+
+    QListWidgetItem *item, *corritem;
+    Mat image;
+    Mat corrim;
+    Mat gim;
+    Mat gci;
+    Mat CI;
+
+    QString outname;
+    if(!QDir(ui->folderName->text() + QDir::separator() +"CORR_IMG").exists())
+        QDir().mkdir(ui->folderName->text() + QDir::separator() +"CORR_IMG");
+
+    QProgressDialog pdialog("Saving corrected images","",0,100,this);
+    pdialog.setWindowModality(Qt::WindowModal);
+    pdialog.setCancelButton(0);
+    pdialog.setValue(0);
+    pdialog.setWindowTitle("Progress Dialog");
+
+    pdialog.show();
+
+    for(int row = 0; row < ui->listWidget->count(); row++)
+    {
+
+        pdialog.setValue(100*row/ui->listWidget->count());
+        QApplication::processEvents();
+
+
+        item = ui->listWidget->item(row);
+        QString backim = bList.at(row);
+
+        outname = ui->folderName->text() + QDir::separator() +"CORR_IMG" + QDir::separator() + "corrected" + QString::number(row) + ".tif";
+
+        QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+        QString corn = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + backim;
+
+
+        if(!iw->force8bit){
+            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+            corrim = cv::imread(corn.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+        }
+        else{
+            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
+            corrim = cv::imread(corn.toStdString(), CV_LOAD_IMAGE_COLOR);
+        }
+        double min, max,aa;
+        cv::minMaxLoc(image, &min, &max);
+        qDebug() << "minmax " << min << max;
+
+        CI = image.clone();
+        cv::cvtColor(image,gim,CV_BGR2GRAY);
+        cv::cvtColor(corrim,gci,CV_BGR2GRAY);
+
+        for(int i=0;i<image.cols;i++)
+            for(int j=0;j<image.rows;j++){
+
+                if(iw->depth == 0){
+                    Vec3b color = image.at<Vec3b>(Point(i,j));
+                    unsigned char gray = gim.at<unsigned char>(Point(i,j));
+
+                    aa= (double) gci.at<unsigned char>(Point(i,j));
+
+                    double ww = ui->refWhite_2->value();
+                    for(int k=0;k<3;k++)
+                        color[k] = MIN(255,MAX(0,color[k]*ww*255.0/aa));
+
+                    CI.at<Vec3b>(Point(i,j)) = color;
+
+                }
+                else{
+                    Vec<unsigned short, 3>  color = image.at<Vec<unsigned short, 3> >(Point(i,j));
+                    unsigned short gray = (unsigned short) gim.at<unsigned short>(Point(i,j));
+
+                    aa= (double) gci.at<unsigned short>(Point(i,j));
+
+                    double ww = ui->refWhite_2->value();
+
+                    for(int k=0;k<3;k++)
+                        color[k] = (unsigned short) MIN(65535,MAX(0,(((unsigned short)color[k])*ww*65535.0/aa)));
+
+                    CI.at<Vec<unsigned short, 3> >(Point(i,j)) = color;
+                    CI.convertTo(CI,CV_16U);
+                }
+            }
+
+        imwrite( outname.toStdString(), CI );
+        image.release();
+        corrim.release();
+        CI.release();
+        gim.release();
+        gci.release();
+    }
+
+    ui->savecLab->setText("OK");
+
+
+
+}
+
+void RTITool::on_createProjectButton_clicked()
+{
+    QString folder = QFileDialog::getExistingDirectory(this,
+                                                       tr("Choose Or Create Directory"),
+                                                       "./",
+                                                       QFileDialog::DontResolveSymlinks);
+    QDir pathDir(folder + QDir::separator() + "images");
+    if (pathDir.exists()) {
+        ui->msgBox->append("Error: can't overwrite existing project");
+        return;
+    }
+
+    pathDir.mkdir(folder + QDir::separator() + "images");
+    ui->folderName->setText(folder);
+
+    ui->tabDir->setTabEnabled(2, true);
+    ui->tabDir->setTabEnabled(3, true);
+    ui->tabDir->setTabEnabled(4, true);
+    ui->tabDir->setTabEnabled(1, true);
+
+
+}
+
+void RTITool::on_openProjectButton_clicked()
+{
+    QString folder = QFileDialog::getExistingDirectory(this,
+                                                       tr("Choose Directory"),
+                                                       "./",
+                                                       QFileDialog::DontResolveSymlinks);
+    QDir pathDir(folder + QDir::separator() + "images");
+
+    if (!pathDir.exists()) {
+        ui->msgBox->append("Error: invalid project");
+        return;
+    }
+
+    // check all the other info and load data
+
+    ui->folderName->setText(folder);
+    ui->tabDir->setTabEnabled(2, true);
+    ui->tabDir->setTabEnabled(3, true);
+    ui->tabDir->setTabEnabled(4, true);
+    ui->tabDir->setTabEnabled(1, true);
+
+    // load existing data
+    QString  lpf = ui->folderName->text() + QDir::separator() + "file.lp";
+    QFile flp(lpf);
+
+    if(flp.exists())
+    {
+        loadLp(lpf);
+
+    }
+    else
+    {
+
+        QString  listf = ui->folderName->text() + QDir::separator() + "list.txt";
+        loadList(listf);
+    }
+    QString  calf  = ui->folderName->text() + QDir::separator() + "calib.txt";
+    loadCalib(calf);
+    QString  corrif  = ui->folderName->text() + QDir::separator() + "corrim.txt";
+    loadCorrim(corrif);
+
+    if(QDir(ui->folderName->text() + QDir::separator() + "CORR_IMG").exists())
+        ui->savecLab->setText("OK");
+
+
+    if(QDir(ui->folderName->text() + QDir::separator() +"CAL_IMG").exists()){
+
+        importCalim(ui->folderName->text() + QDir::separator() +"CAL_IMG" );
+    }
+
+}
+
+void RTITool::on_findImagesButton_clicked()
+{
+
+    QString folder = ui->folderName->text();
+    QDir directory(folder + QDir::separator()  + "images");
+    QStringList images = directory.entryList(QStringList() << "*.jpg" << "*.JPG"<< "*.tiff" << "*.tif"<< "*.TIFF" << "*.TIF"<< "*.png" << "*.PNG",QDir::Files);
+
+
+    if(images.isEmpty()) {
+        ui->msgBox->append("No images found");
+        return;
+    }
+
+    ui->listWidget->clear();
+    ui->listWidget->addItems( images );
+
+    iw->load(folder + QDir::separator() + "images" + QDir::separator() + ui->listWidget->item(0)->text());
+    iw->show();
+
+    QString msg = "Loaded list file with " + QString::number(ui->listWidget->count()) + " images";
+    ui->msgBox->setText(msg);
+    if(iw->depth==0) ui->msgBox->append("8 bit depth");
+    if(iw->depth==2) ui->msgBox->append("16 bit depth");
+
+    QFile lfile(ui->folderName->text() + QDir::separator() + "list.txt");
+
+    if (!lfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "error";
+    }
+    else{
+        QTextStream out(&lfile);
+        for(int row = 0; row < ui->listWidget->count(); row++)
+        {
+            out << ui->listWidget->item(row)->text() << endl;
+        }
+    }
+
+
+}
+
+void RTITool::on_copyFolderButton_clicked()
+{
+    QString sourceFolder = getFoldername();
+    /*QFileDialog::getExistingDirectory(this,
+                           tr("Choose Directory"),
+                           "./",
+                           QFileDialog::DontResolveSymlinks);*/
+    QDir sourceDir(sourceFolder);
+
+    QString folder = ui->folderName->text();
+
+    QString destFolder = folder + QDir::separator()  + "images";
+
+    ui->listWidget->clear();
+
+    QProgressDialog progress("Importing files please wait...", "", 0, 100, this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setValue(0);
+    progress.setCancelButton(0);
+    progress.setWindowTitle("Progress Dialog");
+    progress.show( );
+    QCoreApplication::processEvents();
+
+    QStringList files = sourceDir.entryList(QDir::Files);
+    for(int i = 0; i< files.count(); i++) {
+        QString srcName = sourceFolder + QDir::separator() + files[i];
+        QString destName = destFolder + QDir::separator() + files[i];
+
+        progress.setValue(i*100/files.count());
+        if (!QFile::copy(srcName, destName))
+            return;
+    }
+
+    QDir directory(destFolder);
+    QStringList images = directory.entryList(QStringList() << "*.jpg" << "*.JPG"<< "*.tiff" << "*.tif"<< "*.TIFF" << "*.TIF"<< "*.png" << "*.PNG",QDir::Files);
+
+    ui->listWidget->addItems( images );
+
+    iw->load(folder + QDir::separator() + "images" + QDir::separator() + ui->listWidget->item(0)->text());
+    iw->show();
+
+    QFile lfile(ui->folderName->text() + QDir::separator() + "list.txt");
+
+    if (!lfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "error";
+    }
+    else{
+        QTextStream out(&lfile);
+        for(int row = 0; row < ui->listWidget->count(); row++)
+        {
+            out << ui->listWidget->item(row)->text() << endl;
+        }
+    }
+
+}
+
+
+QString RTITool::getFilename()
+{
+    QString fileName;
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setDirectory(QDir::currentPath());
+    dialog.exec();
+    QStringList list = dialog.selectedFiles();
+    if(!list.isEmpty())
+        fileName = list.at(0);
+    qDebug()<<fileName;
+    return(fileName);
+}
+
+QString RTITool::getFoldername()
+{
+    QString folderName;
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setDirectory(QDir::currentPath());
+    dialog.exec();
+    QStringList list = dialog.selectedFiles();
+    if(!list.isEmpty())
+        folderName = list.at(0);
+
+    return(folderName);
+}
+
+
+
+
+void RTITool::loadCorrim(QString fileName)
+{
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QStringList  fields;
+
+    QTextStream textStream(&file);
+
+    QString line = textStream.readLine();
+
+    if(line.toInt()==1)
+        ui->weightDir->setChecked(true);
+
+    line = textStream.readLine();
+
+    ui->refWhite->setValue(line.toDouble());
+    file.close();
+
+}
+
+
+void RTITool::loadCorrData(QString fileName)
+{
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+
+    file.close();
+
+}
+
+void RTITool::importCalim(QString sourceFolder){
+     bList.clear();
+
+     QDir sourceDir(sourceFolder);
+
+     QString folder = ui->folderName->text();
+
+     QString destFolder = folder + QDir::separator()  + "CAL_IMG";
+
+     QProgressDialog progress("Importing files please wait...", "", 0, 100, this);
+     progress.setWindowModality(Qt::WindowModal);
+     progress.setValue(0);
+     progress.setCancelButton(0);
+     progress.setWindowTitle("Progress Dialog");
+     progress.show( );
+     QCoreApplication::processEvents();
+
+     bList = sourceDir.entryList(QDir::Files);
+
+
+     for(int i = 0; i< bList.count(); i++) {
+         QString srcName = sourceFolder + QDir::separator() + bList[i];
+         QString destName = destFolder + QDir::separator() + bList[i];
+
+         progress.setValue(i*100/bList.count());
+         if (!QFile::copy(srcName, destName))
+             return;
+     }
+
+
+
+     if(bList.size() != ui->listWidget->count())
+         ui->msgBox->append("ERROR");
+}
+
+
+
+void RTITool::findCalim(){
+     bList.clear();
+
+     QString folder = ui->folderName->text();
+
+     QDir sourceDir(folder + QDir::separator()  + "CAL_IMG");
+
+     bList = sourceDir.entryList(QDir::Files);
+
+     if(bList.size() != ui->listWidget->count())
+         ui->msgBox->append("ERROR");
+}
+
+
+void RTITool::on_importCalimButton_clicked()
+{
+
+
+
+    if(!QDir(ui->folderName->text() + QDir::separator() +"CAL_IMG").exists())
+        QDir().mkdir(ui->folderName->text() + QDir::separator() +"CAL_IMG");
+
+
+    QString sourceFolder = getFoldername();
+
+    importCalim(sourceFolder);
+
+
 
 }
