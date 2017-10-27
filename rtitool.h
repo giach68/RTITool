@@ -142,6 +142,8 @@ private slots:
 
     void loadLp(QString fileName);
 
+    void loadDirFromLp(QString fileName);
+
     void on_loadLpButton_clicked();
 
     void loadCalib(QString fileName);
@@ -212,6 +214,10 @@ private slots:
     void importCalim(QString sourceFolder);
 
     void findCalim();
+
+    void on_lpDirButton_clicked();
+
+    void on_pushButton_3_clicked();
 
 private:
     Ui::RTITool *ui;

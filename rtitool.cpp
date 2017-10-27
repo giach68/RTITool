@@ -1914,7 +1914,7 @@ void RTITool::saveLp(QString fileName){
         }
         stream << "\n";
         for(int i=0;i<ui->listWidget->count();i++){
-            stream << ui->listWidget->item(i)->text();
+            stream  << ui->listWidget->item(i)->text() ;
             for(int k=0;k<ns;k++)
                 stream << " " << iw->lights[k].at(i)[0] <<  " " << iw->lights[k].at(i)[1] << " " << iw->lights[k].at(i)[2];
 
@@ -3215,10 +3215,10 @@ void RTITool::on_pushButton_2_clicked()
 void RTITool::on_saveAPA_clicked()
 {
     int flag_dir=0;
-    int flag_chr=0;
+    int flag_chr=1;
     int flag_lum=0;
     int flag_corr=0;
-    int flag_binary = 0;
+    int flag_binary = 1;
 
     QString file_pref = QInputDialog::getText(this, "Enter Filename without suffix", "");
     QString  filename=ui->folderName->text() + QDir::separator() + file_pref + ".aph";
@@ -3238,8 +3238,8 @@ void RTITool::on_saveAPA_clicked()
 
 
     if(ui->cInt->isChecked()) flag_corr = 1;
-    if(ui->cBinary->isChecked()) flag_binary=1;
-    if(ui->cChr->isChecked()) flag_chr = 1;
+    //if(ui->cBinary->isChecked()) flag_binary=1;
+    //if(ui->cChr->isChecked()) flag_chr = 1;
 
 
     int ax, ay, sx,sy;
@@ -3287,7 +3287,7 @@ void RTITool::on_saveAPA_clicked()
 
         stream << "CHROMA_IMAGE ";
         if (flag_chr==1) {
-            stream << chrname.toLatin1() << "\n";
+            stream <<  file_pref + "_croma.tiff" << "\n";
         }
         else {
             stream <<"none" << "\n";
@@ -3296,7 +3296,7 @@ void RTITool::on_saveAPA_clicked()
 
         stream << "CHROMAX_IMAGE ";
         if (flag_chr==1) {
-            stream << chrname2.toLatin1() << "\n";
+            stream <<  file_pref + "_cromax.tiff" << "\n";
         }
         else {
             stream <<"none" << "\n";
@@ -3322,7 +3322,7 @@ void RTITool::on_saveAPA_clicked()
         {
             item = ui->listWidget->item(row);
             if(ax>0)
-                stream <<  file_pref.toLatin1() << QDir::separator() << "cropped" << QString::number(row).toLatin1() << ".tif" <<"\n";
+                stream <<  "CROPPED" << file_pref.toLatin1() << QDir::separator() << "cropped" << QString::number(row).toLatin1() << ".tif" <<"\n";
             else{
                 if(flag_corr==1)
                     stream << "CORR_IMG" << QDir::separator() << "corrected" << QString::number(row).toLatin1() << ".tif" <<"\n";
@@ -3519,7 +3519,7 @@ void RTITool::on_saveAPA_clicked()
 
                     cim = image(roi);
 
-                    QString cropname =  ui->folderName->text() + QDir::separator()  + file_pref + QDir::separator() + QString("cropped") + QString::number(row) + ".tif";
+                    QString cropname =  ui->folderName->text() + QDir::separator()  + QString("CROPPED") + file_pref + QDir::separator() + QString("cropped") + QString::number(row) + ".tif";
 
                     if(!QDir( ui->folderName->text() + QDir::separator()  + QString("CROPPED") + file_pref).exists())
                         QDir().mkdir( ui->folderName->text() + QDir::separator()  + QString("CROPPED") + file_pref);
@@ -3601,7 +3601,7 @@ void RTITool::on_saveAPA_clicked()
 
                 }
 
-                if(iw->depth==2){
+                if(iw->depth==2){  // 16 bit
                     outfile.write((char*)&matrs[0],sizem*sizeof(unsigned short));
                     delete matrs;
                     outfile.close();
@@ -3944,6 +3944,7 @@ void RTITool::loadList(QString fileName)
         QString line = textStream.readLine();
         last= line.lastIndexOf(QDir::separator());
         QString lastname=line.right(line.size()-last-1);
+        lastname.replace(" ","_");
 
         progress.setValue(ni);
 
@@ -3953,6 +3954,7 @@ void RTITool::loadList(QString fileName)
         else{
             nList.append(lastname);
             QString dstImg=ui->folderName->text() + QDir::separator() + "images"+ QDir::separator() + lastname;
+
             QFile::copy(line,dstImg);
         }
     }
@@ -4262,6 +4264,234 @@ void RTITool::loadLp(QString fileName)
     if(nsph>2) on_interpDir_clicked();
 
     outfile.close();
+
+}
+
+
+
+void RTITool::loadDirFromLp(QString fileName)
+{
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QFile outfile(ui->folderName->text() + QDir::separator() + "file.lp");
+
+    QString folder = ui->folderName->text();
+
+
+    qDebug(fileName.toLatin1());
+    QStringList  nList;
+    int nimg;
+    int nsph;
+
+    QTextStream textStream(&file);
+
+    QString line = textStream.readLine();
+
+    if (line.isNull())
+        return;
+    QStringList parts = line.split(" ");
+
+    int siz=parts.size();
+
+    if(siz <3){
+        ui->msgBox->append("error: missing data");
+        return;
+    }
+
+    nimg= parts.at(0).toInt();
+    nsph= parts.at(1).toInt();
+
+    int type = 0;
+    if(siz>2)
+        type=parts.at(2).toInt();
+
+    float radii[4];
+    float centx[4];
+    float centy[4];
+    float ry[4];
+    float angle[4];
+
+    for(int i=0;i<nsph;i++){
+        radii[i]=0;
+        centx[i]=0;
+        centy[i]=0;
+        ry[i]=0;
+        angle[i]=0;
+    }
+
+    if(type==1 && siz >nsph*3+1)
+    {
+
+        for(int i=0;i<nsph;i++){
+            radii[i] = parts.at(3+i*3).toFloat();
+            centx[i] = parts.at(4+i*3).toFloat();
+            centy[i] = parts.at(5+i*3).toFloat();
+        }
+    }
+    if(type==2 && siz >nsph*5+1)
+    {
+
+        for(int i=0;i<nsph;i++){
+            radii[i] = parts.at(4+i*5).toFloat();
+            ry[i] = parts.at(5+i*5).toFloat();
+            centx[i] = parts.at(6+i*5).toFloat();
+            centy[i] = parts.at(7+i*5).toFloat();
+            angle[i] = parts.at(3+i*5).toFloat();
+        }
+    }
+
+    parts.clear();
+
+   // ui->listWidget->clear();
+
+    for(int i=0;i<4;i++)
+        iw->lights[i].clear();
+
+
+    for(int i=0;i<nimg;i++){
+        line = textStream.readLine();
+        if (line.isNull())
+            break;
+        QStringList   parts = line.split(" ");
+        // qDebug() << line;
+        // qDebug() << i << " " <<  parts[0];
+  //      ui->listWidget->addItem( parts[0] );
+        if(type==0){
+            double* vec=new double[3];
+
+            vec[0] = parts[1].toDouble();
+            vec[1] = parts[2].toDouble();
+            vec[2] = parts[3].toDouble();
+            float norm=sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
+            vec[0] = vec[0]/norm;
+            vec[1] = vec[1]/norm;
+            vec[2] = vec[2]/norm;
+
+            iw->lights[0].push_back(vec);
+        }
+        else
+            for(int j=0;j<nsph;j++){
+                double* vec=new double[3];
+
+                vec[0] = parts[j*3+1].toDouble();
+                vec[1] = parts[j*3+2].toDouble();
+                vec[2] = parts[j*3+3].toDouble();
+                float norm=sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
+                vec[0] = vec[0]/norm;
+                vec[1] = vec[1]/norm;
+                vec[2] = vec[2]/norm;
+
+                iw->lights[j].push_back(vec);
+                 qDebug() << "l " << (iw->lights[j].at(i))[0] << (iw->lights[j].at(i))[1] << (iw->lights[j].at(i))[2];
+            }
+
+    }
+
+    file.close();
+
+
+    if(type==1){
+        ui->projBox->setChecked(false);
+    }
+    else if(type==2){
+        ui->projBox->setChecked(true);
+    }
+
+    if(type==1 || type==2)
+        for(int i=0;i<nsph;i++){
+
+
+            iw->origins[i].setX((centx[i]-max(ry[i],radii[i]))*iw->scaleFactor);
+            iw->origins[i].setY((centy[i]-max(ry[i],radii[i]))*iw->scaleFactor);
+            iw->ends[i].setX((centx[i]+max(ry[i],radii[i]))*iw->scaleFactor);
+            iw->ends[i].setY((centy[i]+max(ry[i],radii[i]))*iw->scaleFactor);
+            iw->ls[i]->setGeometry(QRect(iw->origins[i],iw->ends[i]));
+
+
+
+
+            if(i==0){
+                ui->cx1spin->setValue(centx[i]);
+                ui->cy1spin->setValue(centy[i]);
+                //ui->r1spin->setValue(radii[i]);
+               // ui->cx1spin->setVisible(true);
+               // ui->cy1spin->setVisible(true);
+              //  ui->r1spin->setVisible(true);
+
+                if(type==2){
+
+                    ui->r2_1Spin->setValue(ry[i]);
+                    ui->angle1spin->setValue(angle[i]);
+                  //  ui->r2_1Spin->setVisible(true);
+                  //  ui->angle1spin->setVisible(true);
+                }
+                iw->sphere1->setGeometry(iw->origins[i].x(),iw->origins[i].y(),max(ry[i],radii[i])*2*iw->scaleFactor,max(ry[i],radii[i])*2*iw->scaleFactor);
+                //iw->sphere1->setVisible(true);
+            }
+            if(i==1){
+                ui->cx2spin->setValue(centx[i]);
+                ui->cy2spin->setValue(centy[i]);
+                ui->r2spin->setValue(radii[i]);
+                //ui->cx2spin->setVisible(true);
+                //ui->cy2spin->setVisible(true);
+                //ui->r2spin->setVisible(true);
+                iw->sphere2->setGeometry(iw->origins[i].x(),iw->origins[i].y(),max(ry[i],radii[i])*2*iw->scaleFactor,max(ry[i],radii[i])*2*iw->scaleFactor);
+                //iw->sphere2->setVisible(true);
+                if(type==2){
+                    ui->r2_2Spin->setValue(ry[i]);
+                    ui->angle2spin->setValue(angle[i]);
+                   // ui->r2_2Spin->setVisible(true);
+                  //  ui->angle2spin->setVisible(true);
+                }
+            }
+            if(i==2){
+                ui->cx3spin->setValue(centx[i]);
+                ui->cy3spin->setValue(centy[i]);
+                ui->r3spin->setValue(radii[i]);
+                //ui->cx3spin->setVisible(true);
+                //ui->cy3spin->setVisible(true);
+                //ui->r3spin->setVisible(true);
+                iw->sphere3->setGeometry(iw->origins[i].x(),iw->origins[i].y(),max(ry[i],radii[i])*2*iw->scaleFactor,max(ry[i],radii[i])*2*iw->scaleFactor);
+                //iw->sphere3->setVisible(true);
+                if(type==2){
+                    ui->r2_3Spin->setValue(ry[i]);
+                    ui->angle3spin->setValue(angle[i]);
+             //       ui->r2_3Spin->setVisible(true);
+              //      ui->angle3spin->setVisible(true);
+                }
+            }
+
+            if(i==3){
+                ui->cx4spin->setValue(centx[i]);
+                ui->cy4spin->setValue(centy[i]);
+                ui->r4spin->setValue(radii[i]);
+           //     ui->cx4spin->setVisible(true);
+             //   ui->cy4spin->setVisible(true);
+            //    ui->r4spin->setVisible(true);
+                iw->sphere4->setGeometry(iw->origins[i].x(),iw->origins[i].y(),max(ry[i],radii[i])*2*iw->scaleFactor,max(ry[i],radii[i])*2*iw->scaleFactor);
+           //     iw->sphere4->setVisible(true);
+                if(type==2){
+                    ui->r2_4Spin->setValue(ry[i]);
+                    ui->angle4spin->setValue(angle[i]);
+         //           ui->r2_4Spin->setVisible(true);
+         //           ui->angle4spin->setVisible(true);
+                }
+            }
+
+            iw->radius[i] = radii[i];
+            iw->cx[i] = max(ry[i],radii[i]);
+            iw->cy[i] = max(ry[i],radii[i]);
+            iw->rx[i]=radii[i];
+            iw->ry[i]=ry[i];
+}
+
+    QApplication::processEvents();
+    //qDebug() << ">>>" << iw->radius[0] << " " << iw->cx[0];
+
+    if(nsph>2) on_interpDir_clicked();
 
 }
 
@@ -4994,7 +5224,7 @@ void RTITool::on_loadIdButton_clicked()
             for(int j=0;j<9;j++)
                 dircoeffs[i][j] = parts[j].toFloat();
 
-            //qDebug() << dircoeffs[i][0] << " " << dircoeffs[i][1] << " " << dircoeffs[i][5];
+            qDebug() << dircoeffs[i][0] << " " << dircoeffs[i][1] << " " << dircoeffs[i][5];
             float c_x=100;//iw->imageLabel->width()/2;
             float c_y=100;//iw->imageLabel->height()/2;
             //                                    dirs[i][0]=dircoeffs[i][0]*c_x+dircoeffs[i][1]*c_y+dircoeffs[i][2];
@@ -5228,7 +5458,14 @@ void RTITool::on_openProjectButton_clicked()
 
         QString  listf = ui->folderName->text() + QDir::separator() + "list.txt";
         loadList(listf);
+
+        QString  lpd = ui->folderName->text() + QDir::separator() + "dirfile.lp";
+        QFile flp(lpd);
+        loadDirFromLp(lpd);
+
+
     }
+
     QString  calf  = ui->folderName->text() + QDir::separator() + "calib.txt";
     loadCalib(calf);
     QString  corrif  = ui->folderName->text() + QDir::separator() + "corrim.txt";
@@ -5311,6 +5548,7 @@ void RTITool::on_copyFolderButton_clicked()
     QStringList files = sourceDir.entryList(QDir::Files);
     for(int i = 0; i< files.count(); i++) {
         QString srcName = sourceFolder + QDir::separator() + files[i];
+        files[i].replace(" ","_");
         QString destName = destFolder + QDir::separator() + files[i];
 
         progress.setValue(i*100/files.count());
@@ -5474,5 +5712,24 @@ void RTITool::on_importCalimButton_clicked()
     importCalim(sourceFolder);
 
 
+
+}
+
+void RTITool::on_lpDirButton_clicked()
+{
+
+    QString fileName;
+    fileName = QFileDialog::getOpenFileName(this,
+                                            tr("Open lp file"));
+
+    QString dstFile = ui->folderName->text() + QDir::separator()  + "dirfile.lp";
+
+    QFile::copy(fileName, dstFile);
+
+    loadDirFromLp(fileName);
+}
+
+void RTITool::on_pushButton_3_clicked()
+{
 
 }

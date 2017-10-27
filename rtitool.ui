@@ -82,7 +82,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_6">
      <attribute name="title">
@@ -1005,10 +1005,13 @@
         <string>Load</string>
        </attribute>
        <widget class="QPushButton" name="loadIdButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="geometry">
          <rect>
-          <x>20</x>
-          <y>10</y>
+          <x>430</x>
+          <y>20</y>
           <width>99</width>
           <height>27</height>
          </rect>
@@ -1027,10 +1030,13 @@
          </rect>
         </property>
         <property name="text">
-         <string>Interpolated directions (.id) file name</string>
+         <string/>
         </property>
        </widget>
        <widget class="QLineEdit" name="filenameID">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -1041,6 +1047,19 @@
         </property>
         <property name="readOnly">
          <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="lpDirButton">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>20</y>
+          <width>201</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Import from .lp file</string>
         </property>
        </widget>
       </widget>
@@ -1060,7 +1079,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabWidgetPage1">
        <attribute name="title">
@@ -1252,7 +1271,7 @@
         <property name="geometry">
          <rect>
           <x>310</x>
-          <y>160</y>
+          <y>90</y>
           <width>171</width>
           <height>31</height>
          </rect>
@@ -1296,8 +1315,8 @@
        <widget class="QPushButton" name="whiteEst">
         <property name="geometry">
          <rect>
-          <x>260</x>
-          <y>70</y>
+          <x>310</x>
+          <y>60</y>
           <width>171</width>
           <height>27</height>
          </rect>
@@ -1417,14 +1436,14 @@
      <widget class="QCheckBox" name="cInt">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>120</y>
-        <width>161</width>
+        <x>290</x>
+        <y>10</y>
+        <width>181</width>
         <height>22</height>
        </rect>
       </property>
       <property name="text">
-       <string>Corrected intensity</string>
+       <string>Use corrected images</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_11">
@@ -1513,10 +1532,13 @@
       </property>
      </widget>
      <widget class="QCheckBox" name="cBinary">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>310</x>
-        <y>10</y>
+        <y>90</y>
         <width>161</width>
         <height>28</height>
        </rect>
@@ -1529,10 +1551,13 @@
       </property>
      </widget>
      <widget class="QCheckBox" name="cChr">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>40</y>
+        <x>340</x>
+        <y>50</y>
         <width>181</width>
         <height>28</height>
        </rect>
