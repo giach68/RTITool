@@ -5282,11 +5282,13 @@ void RTITool::on_loadCalimButton_clicked()
         QString line = textStream.readLine();
         last= line.lastIndexOf(QDir::separator());
         QString lastname=line.right(line.size()-last-1);
+        lastname.replace(" ","_");
+
         qDebug(line.toLatin1());
         if (line.isNull())
             break;
         else
-            bList.append(line);
+            bList.append(lastname);
 
         QString dstImg=ui->folderName->text() + QDir::separator() + "CAL_IMG"+ QDir::separator() + lastname;
         QFile::copy(line,dstImg);
@@ -5297,6 +5299,7 @@ void RTITool::on_loadCalimButton_clicked()
     if(bList.size() != ui->listWidget->count())
         ui->msgBox->append("ERROR");
 
+    ui->backList->addItems( bList );
 
 }
 
@@ -5309,6 +5312,9 @@ void RTITool::on_corrBackimgBut_clicked()
     Mat gim;
     Mat gci;
     Mat CI;
+
+    double lx, ly, lz, elev, azim, plx,ply,plz;
+    double tlx, tly, tlz, telev, tazim;
 
     QString outname;
     if(!QDir(ui->folderName->text() + QDir::separator() +"CORR_IMG").exists())
@@ -5335,7 +5341,7 @@ void RTITool::on_corrBackimgBut_clicked()
         outname = ui->folderName->text() + QDir::separator() +"CORR_IMG" + QDir::separator() + "corrected" + QString::number(row) + ".tif";
 
         QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
-        QString corn = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + backim;
+        QString corn = ui->folderName->text() + QDir::separator()  + "CAL_IMG" + QDir::separator() + backim;
 
 
         if(!iw->force8bit){
@@ -5348,20 +5354,60 @@ void RTITool::on_corrBackimgBut_clicked()
         }
         double min, max,aa;
         cv::minMaxLoc(image, &min, &max);
-        qDebug() << "minmax " << min << max;
+       // qDebug() << "minmax " << min << max;
 
         CI = image.clone();
         cv::cvtColor(image,gim,CV_BGR2GRAY);
         cv::cvtColor(corrim,gci,CV_BGR2GRAY);
 
+
+        // estimate constant direction per image
+      if(!ui->weightDir->isChecked()){
+            plx=ply=plz=0;
+            int nl=0;
+            for(int i=0; i<4; i++)
+                if(! iw->lights[i].size() == 0){
+                    plx+=iw->lights[i].at(row)[0];
+                    ply+=iw->lights[i].at(row)[1];
+                    plz+=iw->lights[i].at(row)[2];
+                    nl++;
+                }
+            if(nl==0){
+                ui->msgBox->append("Error: please estimate light direction first");
+                return;
+            }
+            plx/=nl;
+            ply/=nl;
+            plz/=nl;
+            double norm = sqrt(plx*plx+ply*ply+plz*plz);
+            plx=plx/norm;ply=ply/norm;tlz=tlz/norm;
+            qDebug() <<  "OK " << plx << " " << ply << " " << plz ;
+
+        }
+
+
+
+
+
         for(int i=0;i<image.cols;i++)
             for(int j=0;j<image.rows;j++){
+                double vx =i;
+                double vy =j;
+
+                if(ui->weightDir->isChecked()){
+                    plx = vx*iw->coilix[0].at(row)+vy*iw->coilix[1].at(row)+ iw->coilix[2].at(row);
+                    ply = vx*iw->coiliy[0].at(row)+vy*iw->coiliy[1].at(row)+ iw->coiliy[2].at(row);
+                    plz = vx*iw->coiliz[0].at(row)+vy*iw->coiliz[1].at(row)+ iw->coiliz[2].at(row);
+                    double norm = sqrt(plx*plx+ply*ply+plz*plz);
+                    plx=plx/norm;ply=ply/norm;plz=plz/norm;
+                }
 
                 if(iw->depth == 0){
                     Vec3b color = image.at<Vec3b>(Point(i,j));
                     unsigned char gray = gim.at<unsigned char>(Point(i,j));
 
-                    aa= (double) gci.at<unsigned char>(Point(i,j));
+                    aa= (double) gci.at<unsigned char>(Point(i,j));                 
+                    aa=abs(aa/plz);
 
                     double ww = ui->refWhite_2->value();
                     for(int k=0;k<3;k++)
@@ -5375,7 +5421,7 @@ void RTITool::on_corrBackimgBut_clicked()
                     unsigned short gray = (unsigned short) gim.at<unsigned short>(Point(i,j));
 
                     aa= (double) gci.at<unsigned short>(Point(i,j));
-
+                    aa=abs(aa/plz);
                     double ww = ui->refWhite_2->value();
 
                     for(int k=0;k<3;k++)
