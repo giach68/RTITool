@@ -14,7 +14,7 @@
 #include <QTime>
 #include <QProgressDialog>
 #include <QMessageBox>
-#include <qt5/QtCore/qtextstream.h>
+#include <QtCore/qtextstream.h>
 #include "s_hull_pro.h"
 
 
