@@ -831,6 +831,7 @@ RTITool::RTITool(QWidget *parent) :
     ui->weightDir->setChecked(true);
     ui->autoFit->setChecked(true);
     ui->onMax->setChecked(true);
+    ui->projBox->setChecked(true);
     ui->cx1spin->setVisible(false);
     ui->cx2spin->setVisible(false);
     ui->cx3spin->setVisible(false);
@@ -3936,7 +3937,18 @@ void RTITool::loadList(QString fileName)
     progress.setWindowTitle("Progress Dialog");
     progress.show( );
 
+    int line_count=0;
+
+
     QTextStream textStream(&file);
+
+    while( !textStream.atEnd())
+    {
+       textStream.readLine();
+        line_count++;
+    }
+
+    textStream.seek(0);
     int ni=0;
     while (true)
     {
@@ -3946,7 +3958,7 @@ void RTITool::loadList(QString fileName)
         QString lastname=line.right(line.size()-last-1);
         lastname.replace(" ","_");
 
-        progress.setValue(ni);
+        progress.setValue(ni*100/line_count);
 
         qDebug(line.toLatin1());
         if (line.isNull())
@@ -4635,7 +4647,7 @@ void RTITool::on_undistortImagesButton_clicked(){
     QString originalImageName;
     QString undistortedImageName;
 
-    QProgressDialog progress("Importing files please wait...", "", 0, ui->listWidget->count(), this);
+    QProgressDialog progress("Undistorting images please wait...", "", 0, ui->listWidget->count(), this);
     progress.setWindowModality(Qt::WindowModal);
     progress.setValue(0);
     progress.setCancelButton(0);
@@ -5775,7 +5787,3 @@ void RTITool::on_lpDirButton_clicked()
     loadDirFromLp(fileName);
 }
 
-void RTITool::on_pushButton_3_clicked()
-{
-
-}
