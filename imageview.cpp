@@ -378,6 +378,7 @@ void ImageView::mousePressEvent(QMouseEvent *event)
 
     if(active==5){
         origins[0] = imageLabel->mapFromParent(event->pos());
+        qDebug() << origins[0].x() << " " << origins[0].y() << endl;
 
         sphere1->setGeometry(QRect(origins[0], QSize()));
         sphere1->show();

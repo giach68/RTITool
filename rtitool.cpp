@@ -5787,3 +5787,100 @@ void RTITool::on_lpDirButton_clicked()
     loadDirFromLp(fileName);
 }
 
+
+void RTITool::on_undistortCalibBut_clicked()
+{
+     //  ui->backList->addItems( bList );
+       bList.clear();
+
+
+       cv::Mat image;
+       QMessageBox messageBox;
+
+
+
+       if (ui->backList->count() == 0){
+           qDebug() << "error";
+           messageBox.critical(0,"Error","There is no loaded image to undistort!");
+           messageBox.setFixedSize(500,200);
+           return;
+       }
+
+       if (iw->cameraMatrix.at<double>(0,2) ==0 ){
+           qDebug() << "error";
+           messageBox.critical(0,"Error","Please load the calibration parameters!");
+           messageBox.setFixedSize(500,200);
+           return;
+       }
+
+       if (iw->distCoeffs.empty() ){
+           qDebug() << "error";
+           messageBox.critical(0,"Error","Please load the calibration parameters!");
+           messageBox.setFixedSize(500,200);
+           return;
+       }
+
+       QString originalImageName;
+       QString undistortedImageName;
+
+       QProgressDialog progress("Undistorting images please wait...", "", 0, ui->listWidget->count(), this);
+       progress.setWindowModality(Qt::WindowModal);
+       progress.setValue(0);
+       progress.setCancelButton(0);
+       progress.setWindowTitle("Progress Dialog");
+       progress.show( );
+       QCoreApplication::processEvents();
+
+       for(int row = 0; row < ui->backList->count(); row++)
+       {
+           QListWidgetItem *item = ui->backList->item(row);
+           originalImageName = item->text();
+
+           progress.setValue(row);
+
+           int last= originalImageName.lastIndexOf(".");
+           QString common=originalImageName.left(last);
+
+           undistortedImageName = common + "_und.tiff";
+
+           QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+           cv::Mat image = imread(filen.toStdString(),CV_LOAD_IMAGE_ANYDEPTH|CV_LOAD_IMAGE_COLOR);
+           cv::Mat image_und;
+           qDebug() << "----- Undistorting image - " << filen << "...";
+           cv::undistort(image,image_und,iw->cameraMatrix,iw->distCoeffs);
+           qDebug() <<"\nDistance coeff"<<iw->distCoeffs.at<double>(0,0)<< iw->distCoeffs.at<double>(1,0)<<"  "<<iw->distCoeffs.at<double>(2,0)<<"  "<<iw->distCoeffs.at<double>(3,0)<<"  ";
+
+           QString outn = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + undistortedImageName;
+           cv::imwrite(outn.toStdString(),image_und);
+           ui->backList->item(row) ->setText(undistortedImageName);
+            bList.append(undistortedImageName);
+           image.release();
+           image_und.release();
+       }
+
+       //reload the undistorted images
+       iw->load(ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + ui->backList->item(0)->text());
+       iw->show();
+
+       QString msg = "Reloaded the image list with undistortion corrected!";
+       ui->msgBox->setText(msg);
+       if(iw->depth==0) ui->msgBox->append("8 bit depth");
+       if(iw->depth==2) ui->msgBox->append("16 bit depth");
+
+
+
+       QFile file(ui->folderName->text() + QDir::separator()  + "list.txt");
+       if (!file.open(QFile::WriteOnly | QFile::Text)) {
+           qDebug() << "error";
+       }
+       else{
+           QTextStream stream( &file );
+           for(int row = 0; row < ui->backList->count(); row++)
+           {
+               stream << ui->backList->item(row)->text() << endl;
+           }
+       }
+       QApplication::processEvents();
+
+}
+

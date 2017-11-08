@@ -219,6 +219,8 @@ private slots:
 
     //void on_pushButton_3_clicked();
 
+    void on_undistortCalibBut_clicked();
+
 private:
     Ui::RTITool *ui;
 };

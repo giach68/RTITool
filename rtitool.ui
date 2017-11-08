@@ -1082,7 +1082,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabWidgetPage1">
        <attribute name="title">
@@ -1412,6 +1412,19 @@
           <width>256</width>
           <height>192</height>
          </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="undistortCalibBut">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>100</y>
+          <width>99</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Undistort</string>
         </property>
        </widget>
       </widget>
