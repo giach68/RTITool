@@ -1114,12 +1114,21 @@ void RTITool::toggleSph1()
             box = segmentAndFitEllipseMax(rois1);
             qDebug() <<"Returned features-Center: " << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
             iw->boxE[0]=box;
+            QFile bfile(ui->folderName->text() + QDir::separator() + "box1.txt");
+            if (!bfile.open(QFile::WriteOnly | QFile::Text)) {
+                qDebug() << "error";
+            }
+            else{
+                QTextStream stream( &bfile );
+                stream << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
+                bfile.close();
+            }
         }
 
         qDebug() <<"Returned features-Center: " << cx << " "  << cy << "  "<< radius;
 
         iw->ls[0]->setGeometry((ax)*iw->scaleFactor,(ay)*iw->scaleFactor,(bx-ax)*iw->scaleFactor,(by-ay)*iw->scaleFactor);
-        iw->ls[0]->setScaledContents(true);;;
+        iw->ls[0]->setScaledContents(true);
 
 
         //   circle(rois1, Point(cx,cy), radius, color, 1, 8, 0);		// Disegno il cerchio effettivo
@@ -1248,7 +1257,15 @@ void RTITool::toggleSph2()
 
             box = segmentAndFitEllipseMax(rois1);
             iw->boxE[1]=box;
-
+            QFile bfile(ui->folderName->text() + QDir::separator() + "box1.txt");
+            if (!bfile.open(QFile::WriteOnly | QFile::Text)) {
+                qDebug() << "error";
+            }
+            else{
+                QTextStream stream( &bfile );
+                stream << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
+                bfile.close();
+            }
             //   qDebug() <<"Returned features-Center: " << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
         }
 
@@ -1385,7 +1402,15 @@ void RTITool::toggleSph3()
 
             box = segmentAndFitEllipseMax(rois1);
             iw->boxE[2]=box;
-
+            QFile bfile(ui->folderName->text() + QDir::separator() + "box2.txt");
+            if (!bfile.open(QFile::WriteOnly | QFile::Text)) {
+                qDebug() << "error";
+            }
+            else{
+                QTextStream stream( &bfile );
+                stream << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
+                bfile.close();
+            }
 
             qDebug() <<"Returned features-Center: " << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
         }
@@ -1518,10 +1543,18 @@ void RTITool::toggleSph4()
             box = segmentAndFitEllipseMax(rois1);
             iw->boxE[3]=box;
 
-            qDebug() <<"Returned features-Center: " << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
+           // qDebug() <<"Returned features-Center: " << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
+            QFile bfile(ui->folderName->text() + QDir::separator() + "box3.txt");
+            if (!bfile.open(QFile::WriteOnly | QFile::Text)) {
+                qDebug() << "error";
+            }
+            else{
+                QTextStream stream( &bfile );
+                stream << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
+                bfile.close();
+            }
         }
 
-        qDebug() <<"Returned features-Center: " << cx << " "  << cy << "  "<< radius;
 
         iw->ls[3]->setGeometry((ax)*iw->scaleFactor,(ay)*iw->scaleFactor,(bx-ax)*iw->scaleFactor,(by-ay)*iw->scaleFactor);
         iw->ls[3]->setScaledContents(true);;;
@@ -5562,6 +5595,93 @@ void RTITool::on_openProjectButton_clicked()
 
         importCalim(ui->folderName->text() + QDir::separator() +"CAL_IMG" );
     }
+
+    if(QDir(ui->folderName->text() + QDir::separator() +"box1.txt").exists()){
+
+    QFile file(ui->folderName->text() + QDir::separator() +"box1.txt");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QTextStream textStream(&file);
+
+    QString line = textStream.readLine();
+    RotatedRect box;
+    if (!line.isNull()){
+    QStringList parts = line.split(" ");
+    box.center.x=parts.at(0).toFloat();
+    box.center.y=parts.at(1).toFloat();
+    box.angle=parts.at(2).toFloat();
+    box.size.width=parts.at(3).toFloat();
+    box.size.height=parts.at(4).toFloat();
+    iw->boxE[0]=box;
+    }
+    file.close();
+    }
+    if(QDir(ui->folderName->text() + QDir::separator() +"box2.txt").exists()){
+
+    QFile file(ui->folderName->text() + QDir::separator() +"box2.txt");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QTextStream textStream(&file);
+
+    QString line = textStream.readLine();
+    RotatedRect box;
+    if (!line.isNull()){
+    QStringList parts = line.split(" ");
+    box.center.x=parts.at(0).toFloat();
+    box.center.y=parts.at(1).toFloat();
+    box.angle=parts.at(2).toFloat();
+    box.size.width=parts.at(3).toFloat();
+    box.size.height=parts.at(4).toFloat();
+    iw->boxE[1]=box;
+    }
+    file.close();
+    }
+    if(QDir(ui->folderName->text() + QDir::separator() +"box3.txt").exists()){
+        QFile file(ui->folderName->text() + QDir::separator() +"box3.txt");
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return;
+
+        QTextStream textStream(&file);
+
+        QString line = textStream.readLine();
+        RotatedRect box;
+        if (!line.isNull()){
+        QStringList parts = line.split(" ");
+        box.center.x=parts.at(0).toFloat();
+        box.center.y=parts.at(1).toFloat();
+        box.angle=parts.at(2).toFloat();
+        box.size.width=parts.at(3).toFloat();
+        box.size.height=parts.at(4).toFloat();
+        iw->boxE[2]=box;
+        }
+        file.close();
+    }
+    if(QDir(ui->folderName->text() + QDir::separator() +"box4.txt").exists()){
+        QFile file(ui->folderName->text() + QDir::separator() +"box4.txt");
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return;
+
+        QTextStream textStream(&file);
+
+        QString line = textStream.readLine();
+        RotatedRect box;
+        if (!line.isNull()){
+        QStringList parts = line.split(" ");
+        box.center.x=parts.at(0).toFloat();
+        box.center.y=parts.at(1).toFloat();
+        box.angle=parts.at(2).toFloat();
+        box.size.width=parts.at(3).toFloat();
+        box.size.height=parts.at(4).toFloat();
+        iw->boxE[3]=box;
+        }
+        file.close();
+
+    }
+
+
+
 
 }
 
