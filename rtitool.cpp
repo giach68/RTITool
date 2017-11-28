@@ -1062,6 +1062,7 @@ void RTITool::on_actionEstimate_triggered()
             cs++;
         }
     ui->dirlab->setText("OK");
+    iw->setVisible(false);
 }
 
 
@@ -3230,7 +3231,12 @@ void RTITool::on_saveAPA_clicked()
     if(ui->dirInfo->currentIndex()==1) flag_dir=1;
     if(ui->dirInfo->currentIndex()==2) flag_dir=2;
 
-
+    QProgressDialog pdialog("Saving appearance profile","",0,100,this);
+    pdialog.setWindowModality(Qt::WindowModal);
+    pdialog.setCancelButton(0);
+    pdialog.setValue(0);
+    pdialog.setWindowTitle("Progress Dialog");
+    pdialog.show();
 
     if(flag_dir==2 && iw->coilix[0].size()< 2 ){
         ui->msgBox->append("ERROR: Interpolate direction first");
@@ -3490,6 +3496,9 @@ void RTITool::on_saveAPA_clicked()
                 // loop over images
                 for(int row = 0; row < ui->listWidget->count(); row++)
                 {
+                    pdialog.setValue(100*row/ui->listWidget->count());
+                    pdialog.update();
+
                     item = ui->listWidget->item(row);
                     QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
 
@@ -3642,6 +3651,8 @@ void RTITool::on_saveAPA_clicked()
                     // loop over images
                     for(int row = 0; row < ui->listWidget->count(); row++)
                     {
+                        pdialog.setValue(100*(row+ui->listWidget->count()*cc)/(3*ui->listWidget->count()));
+                        pdialog.update();
                         item = ui->listWidget->item(row);
                         QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
                         if(flag_corr==0){
@@ -4714,10 +4725,14 @@ void RTITool::loadCalib(QString fileName)
 
     QString dstFile = ui->folderName->text() + QDir::separator()  + "calib.txt";
 
-    QFile::copy(fileName, dstFile);
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+         ui->msgBox->append("Invalid calibration file");
         return;
+       }
+
+        QFile::copy(fileName, dstFile);
 
     qDebug(fileName.toLatin1());
     QStringList  fields;
@@ -4735,13 +4750,9 @@ void RTITool::loadCalib(QString fileName)
         else
             fields = line.split(' ');
 
-        //        for(int k=0;k<3;k++)
-        //            iw->cameraMatrix.at<double>(k,i) = fields.at(k).toDouble();
 
-        //        QString str = QString("%1 %2 %3")
-        //                .arg(iw->cameraMatrix.at<double>(0,i),1,'f',2)
-        //                .arg(iw->cameraMatrix.at<double>(1,i),1,'f',2)
-        //                .arg(iw->cameraMatrix.at<double>(2,i),1,'f',2);
+    if(fields.size()<3)  {ui->msgBox->append("Invalid calibration file");
+    return;}
 
         for(int k=0;k<3;k++)
             iw->cameraMatrix.at<double>(i,k) = fields.at(k).toDouble();
@@ -4755,12 +4766,26 @@ void RTITool::loadCalib(QString fileName)
 
 
     QString line = textStream.readLine();
+    if (line.isNull()) return;
+    else {
+
+
+     fields = line.split(' ');
+     if(fields.size()<4){
+     ui->msgBox->append("Invalid calibration file");
+    return;
+        }
     for(int i=0;i<4;i++){
-        if (line.isNull())
-            break;
-        else
-            fields = line.split(' ');
+
+
         iw->distCoeffs.at<double>(i,0) = fields.at(i).toDouble();
+    }
+    QString stri = QString("%1 %2 %3 %4")
+            .arg(iw->distCoeffs.at<double>(0,0),1,'f',2)
+            .arg(iw->distCoeffs.at<double>(1,0),1,'f',2)
+            .arg(iw->distCoeffs.at<double>(2,0),1,'f',2)
+            .arg(iw->distCoeffs.at<double>(3,0),1,'f',2);
+    ui->k1Lab->setText(stri);
     }
 
     QString str = QString("%1 %2")
@@ -5843,14 +5868,14 @@ void RTITool::on_undistortCalibBut_clicked()
 
            undistortedImageName = common + "_und.tiff";
 
-           QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+           QString filen = ui->folderName->text() + QDir::separator()  + "CAL_IMG" + QDir::separator() + item->text();
            cv::Mat image = imread(filen.toStdString(),CV_LOAD_IMAGE_ANYDEPTH|CV_LOAD_IMAGE_COLOR);
            cv::Mat image_und;
            qDebug() << "----- Undistorting image - " << filen << "...";
            cv::undistort(image,image_und,iw->cameraMatrix,iw->distCoeffs);
            qDebug() <<"\nDistance coeff"<<iw->distCoeffs.at<double>(0,0)<< iw->distCoeffs.at<double>(1,0)<<"  "<<iw->distCoeffs.at<double>(2,0)<<"  "<<iw->distCoeffs.at<double>(3,0)<<"  ";
 
-           QString outn = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + undistortedImageName;
+           QString outn = ui->folderName->text() + QDir::separator()  + "CAL_IMG" + QDir::separator() + undistortedImageName;
            cv::imwrite(outn.toStdString(),image_und);
            ui->backList->item(row) ->setText(undistortedImageName);
             bList.append(undistortedImageName);
@@ -5859,7 +5884,7 @@ void RTITool::on_undistortCalibBut_clicked()
        }
 
        //reload the undistorted images
-       iw->load(ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + ui->backList->item(0)->text());
+       iw->load(ui->folderName->text() + QDir::separator()  + "CAL_IMG" + QDir::separator() + ui->backList->item(0)->text());
        iw->show();
 
        QString msg = "Reloaded the image list with undistortion corrected!";
@@ -5884,3 +5909,16 @@ void RTITool::on_undistortCalibBut_clicked()
 
 }
 
+
+void RTITool::on_closeProjectButton_clicked()
+{
+ ui->listWidget->clear();
+ ui->msgBox->clear();
+ ui->folderName->clear();
+ ui->backList->clear();
+ iw->setVisible(false);
+    clearParams();
+
+
+
+}

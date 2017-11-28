@@ -221,6 +221,8 @@ private slots:
 
     void on_undistortCalibBut_clicked();
 
+    void on_closeProjectButton_clicked();
+
 private:
     Ui::RTITool *ui;
 };
