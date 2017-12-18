@@ -1114,7 +1114,7 @@ void RTITool::toggleSph1()
             box = segmentAndFitEllipseMax(rois1);
             qDebug() <<"Returned features-Center: " << box.center.x << " "  << box.center.y << " Angle " << box.angle <<" Width "<<box.size.width<<" Height "<<box.size.height;
             iw->boxE[0]=box;
-            QFile bfile(ui->folderName->text() + QDir::separator() + "box1.txt");
+            QFile bfile(ui->folderName->text() + QDir::separator() + "box0.txt");
             if (!bfile.open(QFile::WriteOnly | QFile::Text)) {
                 qDebug() << "error";
             }
@@ -2891,6 +2891,7 @@ void RTITool::on_saveCorrImages_clicked()
 
     out << ui->weightDir->isChecked() << endl;
     out << ui->refWhite->value() << endl;
+    cofile.close();
 
     QString outname;
     if(!QDir(ui->folderName->text() + QDir::separator() +"CORR_IMG").exists())
@@ -3255,7 +3256,7 @@ void RTITool::on_saveAPA_clicked()
     int flag_corr=0;
     int flag_binary = 1;
 
-    QString file_pref = QInputDialog::getText(this, "Enter Filename without suffix", "");
+    QString file_pref = QInputDialog::getText(this, "Enter Filename with suffix", "");
     QString  filename=ui->folderName->text() + QDir::separator() + file_pref + ".aph";
     QString  binname=ui->folderName->text() + QDir::separator() + file_pref + ".apd";
     QString  chrname=ui->folderName->text() + QDir::separator() + file_pref + "_croma.tiff";
@@ -4038,6 +4039,11 @@ void RTITool::on_loadListButton_clicked()
     fileName = getFilename();
     if(!fileName.isEmpty())
         loadList(fileName);
+
+    QString destName = ui->folderName->text() + QDir::separator() + "list.txt";
+
+    if (!QFile::copy(fileName, destName))
+        return;
 
 }
 
@@ -5371,6 +5377,11 @@ void RTITool::on_loadCalimButton_clicked()
 
     ui->backList->addItems( bList );
 
+    QString destName = ui->folderName->text() + QDir::separator() + "backlist.txt";
+
+    if (!QFile::copy(fileName, destName))
+        return;
+
 }
 
 void RTITool::on_corrBackimgBut_clicked()
@@ -5587,6 +5598,9 @@ void RTITool::on_openProjectButton_clicked()
     QString  corrif  = ui->folderName->text() + QDir::separator() + "corrim.txt";
     loadCorrim(corrif);
 
+    QString  corrd  = ui->folderName->text() + QDir::separator() + "backlist.txt";
+    loadCorrData(corrd);
+
     if(QDir(ui->folderName->text() + QDir::separator() + "CORR_IMG").exists())
         ui->savecLab->setText("OK");
 
@@ -5596,9 +5610,9 @@ void RTITool::on_openProjectButton_clicked()
         importCalim(ui->folderName->text() + QDir::separator() +"CAL_IMG" );
     }
 
-    if(QDir(ui->folderName->text() + QDir::separator() +"box1.txt").exists()){
+    if(QDir(ui->folderName->text() + QDir::separator() +"box0.txt").exists()){
 
-    QFile file(ui->folderName->text() + QDir::separator() +"box1.txt");
+    QFile file(ui->folderName->text() + QDir::separator() +"box0.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
@@ -5617,9 +5631,9 @@ void RTITool::on_openProjectButton_clicked()
     }
     file.close();
     }
-    if(QDir(ui->folderName->text() + QDir::separator() +"box2.txt").exists()){
+    if(QDir(ui->folderName->text() + QDir::separator() +"box1.txt").exists()){
 
-    QFile file(ui->folderName->text() + QDir::separator() +"box2.txt");
+    QFile file(ui->folderName->text() + QDir::separator() +"box1.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
@@ -5638,8 +5652,8 @@ void RTITool::on_openProjectButton_clicked()
     }
     file.close();
     }
-    if(QDir(ui->folderName->text() + QDir::separator() +"box3.txt").exists()){
-        QFile file(ui->folderName->text() + QDir::separator() +"box3.txt");
+    if(QDir(ui->folderName->text() + QDir::separator() +"box2.txt").exists()){
+        QFile file(ui->folderName->text() + QDir::separator() +"box2.txt");
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
             return;
 
@@ -5658,8 +5672,8 @@ void RTITool::on_openProjectButton_clicked()
         }
         file.close();
     }
-    if(QDir(ui->folderName->text() + QDir::separator() +"box4.txt").exists()){
-        QFile file(ui->folderName->text() + QDir::separator() +"box4.txt");
+    if(QDir(ui->folderName->text() + QDir::separator() +"box3.txt").exists()){
+        QFile file(ui->folderName->text() + QDir::separator() +"box3.txt");
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
             return;
 
@@ -5845,6 +5859,53 @@ void RTITool::loadCorrData(QString fileName)
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
+    bList.clear();
+
+
+    int last= fileName.lastIndexOf(QDir::separator());
+    QString folder=fileName.left(last+1);
+
+    QProgressDialog progress("Importing files please wait...", "", 0, 100, this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setValue(0);
+    progress.setCancelButton(0);
+    progress.setWindowTitle("Progress Dialog");
+    progress.show( );
+
+    int line_count=0;
+
+
+    QTextStream textStream(&file);
+
+    while( !textStream.atEnd())
+    {
+       textStream.readLine();
+        line_count++;
+    }
+
+    textStream.seek(0);
+    int ni=0;
+    while (true)
+    {
+        ni++;
+        QString line = textStream.readLine();
+        last= line.lastIndexOf(QDir::separator());
+        QString lastname=line.right(line.size()-last-1);
+        lastname.replace(" ","_");
+
+        progress.setValue(ni*100/line_count);
+
+        qDebug(line.toLatin1());
+        if (line.isNull())
+            break;
+        else{
+            bList.append(lastname);
+
+        }
+    }
+    file.close();
+    ui->backList->clear();
+    ui->backList->addItems( bList );
 
     file.close();
 
@@ -6001,11 +6062,12 @@ void RTITool::on_undistortCalibBut_clicked()
             bList.append(undistortedImageName);
            image.release();
            image_und.release();
+           QFile::remove(filen);
        }
 
        //reload the undistorted images
-       iw->load(ui->folderName->text() + QDir::separator()  + "CAL_IMG" + QDir::separator() + ui->backList->item(0)->text());
-       iw->show();
+       //iw->load(ui->folderName->text() + QDir::separator()  + "CAL_IMG" + QDir::separator() + ui->backList->item(0)->text());
+       //iw->show();
 
        QString msg = "Reloaded the image list with undistortion corrected!";
        ui->msgBox->setText(msg);
@@ -6014,7 +6076,7 @@ void RTITool::on_undistortCalibBut_clicked()
 
 
 
-       QFile file(ui->folderName->text() + QDir::separator()  + "list.txt");
+       QFile file(ui->folderName->text() + QDir::separator()  + "backlist.txt");
        if (!file.open(QFile::WriteOnly | QFile::Text)) {
            qDebug() << "error";
        }
@@ -6026,6 +6088,8 @@ void RTITool::on_undistortCalibBut_clicked()
            }
        }
        QApplication::processEvents();
+
+       ui->msgBox->append("Background images undistorted");
 
 }
 
