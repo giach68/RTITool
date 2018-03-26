@@ -395,7 +395,7 @@ cv::Point2f getHighlightPosition(cv::Mat& image, cv::RotatedRect& boxEllipse){
                 centroide = centroid_i;
             }
 
-            if(li=-1){
+            if(li==-1){
                 li=0;
                 la=0;
                 centroide.x = contorni[0][0].x;
@@ -766,7 +766,7 @@ double* Highlight(Mat region, int cx, int cy, int raggio){
                     Sy = Sy_i;
                 }
             }
-            if(li=-1){
+            if(li==-1){
                 li=0;
                 la=0;
                 centroide.x = cx -raggio + contorni[0][0].x;
