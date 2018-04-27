@@ -1655,6 +1655,17 @@ void RTITool::toggleW4()
     ui->w4l->setText(QString("OK"));
 }
 
+void RTITool::areaCrop()
+{
+    int a,b,c,d;
+    iw->cropArea->geometry().getCoords(&a,&b,&c,&d);
+
+    ui->spinOx->setValue(int(a/iw->scaleFactor));
+    ui->spinOy->setValue(int(b/iw->scaleFactor));
+    ui->spinSx->setValue(int((c-a)/iw->scaleFactor));
+    ui->spinSy->setValue(int((d-b)/iw->scaleFactor));
+}
+
 void RTITool::on_sph1but_clicked()
 {
     iw->active=5;
@@ -6105,4 +6116,66 @@ void RTITool::on_closeProjectButton_clicked()
 
 
 
+}
+
+void RTITool::on_cy1spin_editingFinished()
+{
+
+}
+
+void RTITool::on_spinOx_valueChanged(int arg1)
+{
+    int ax,ay,bx,by;
+    iw->cropArea->geometry().getCoords(&ax,&ay,&bx,&by);
+   /* ax = (int) ((double)ax / iw->scaleFactor);
+    ay = (int) ((double)ay / iw->scaleFactor);
+    bx = (int) ((double)bx / iw->scaleFactor);
+    by = (int) ((double)by / iw->scaleFactor);*/
+    iw->originc = QPoint(arg1*iw->scaleFactor,ay);
+    iw->endc = QPoint(arg1*iw->scaleFactor+bx-ax,by);
+
+    iw->cropArea->setGeometry(QRect(iw->originc,iw->endc));
+    //iw->cropArea->setGeometry(arg1,ay,bx,by);
+ iw->cropArea->show();
+    qDebug() <<iw->scaleFactor << " " << iw->zoomFactor;
+   //
+
+}
+
+void RTITool::on_spinOy_valueChanged(int arg1)
+{
+    int ax,ay,bx,by;
+    iw->cropArea->geometry().getCoords(&ax,&ay,&bx,&by);
+    iw->originc = QPoint(ax,arg1*iw->scaleFactor);
+    iw->endc = QPoint(bx,arg1*iw->scaleFactor+by-ay);
+
+    iw->cropArea->setGeometry(QRect(iw->originc,iw->endc));
+     iw->cropArea->show();
+   // iw->cropArea->setGeometry(ax,arg1,bx,by);
+}
+
+void RTITool::on_spinSx_valueChanged(int arg1)
+{
+    int ax,ay,bx,by;
+    iw->cropArea->geometry().getCoords(&ax,&ay,&bx,&by);
+
+    //iw->originc = QPoint(ax,ay);
+    iw->endc = QPoint(arg1*iw->scaleFactor+ax,by);
+
+   iw->cropArea->setGeometry(QRect(iw->originc,iw->endc));
+  //  iw->cropArea->setGeometry(ax,ay,arg1-ax,by);
+ iw->cropArea->show();
+}
+
+void RTITool::on_spinSy_valueChanged(int arg1)
+{
+    int ax,ay,bx,by;
+    iw->cropArea->geometry().getCoords(&ax,&ay,&bx,&by);
+
+    //iw->originc = QPoint(ax,ay);
+    iw->endc = QPoint(bx,arg1*iw->scaleFactor+ay);
+
+    iw->cropArea->setGeometry(QRect(iw->originc,iw->endc));
+    iw->cropArea->show();
+    //iw->cropArea->setGeometry(ax,ay,bx,arg1-ay);
 }

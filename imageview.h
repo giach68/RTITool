@@ -146,7 +146,7 @@ signals:
     void w2Sig();
     void w3Sig();
     void w4Sig();
-
+    void cropSig();
 };
 
 #endif // IMAGEVIEW_H

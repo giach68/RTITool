@@ -91,7 +91,7 @@ ImageView::ImageView(QWidget *parent) :
     connect(this,SIGNAL(w2Sig()),(this->parent()),SLOT(toggleW2()));
     connect(this,SIGNAL(w3Sig()),(this->parent()),SLOT(toggleW3()));
     connect(this,SIGNAL(w4Sig()),(this->parent()),SLOT(toggleW4()));
-
+    connect(this,SIGNAL(cropSig()),(this->parent()),SLOT(areaCrop()));
 }
 
 ImageView::~ImageView()
@@ -436,8 +436,10 @@ void ImageView::mouseReleaseEvent(QMouseEvent *event)
         endc= imageLabel->mapFromParent(event->pos());
         if(endc.x() > originc.x() && endc.y() > originc.y()){
             cropArea->setGeometry(QRect(originc,endc));
-            active=0;
 
+            active=0;
+            qDebug() << scaleFactor << "!!!";
+            emit cropSig();
         }
     }
 

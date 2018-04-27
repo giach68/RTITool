@@ -47,6 +47,7 @@ private slots:
     void toggleW2();
     void toggleW3();
     void toggleW4();
+    void areaCrop();
 
     void on_sph1but_clicked();
 
@@ -222,6 +223,16 @@ private slots:
     void on_undistortCalibBut_clicked();
 
     void on_closeProjectButton_clicked();
+
+    void on_cy1spin_editingFinished();
+
+    void on_spinOx_valueChanged(int arg1);
+
+    void on_spinOy_valueChanged(int arg1);
+
+    void on_spinSx_valueChanged(int arg1);
+
+    void on_spinSy_valueChanged(int arg1);
 
 private:
     Ui::RTITool *ui;
