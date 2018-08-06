@@ -1868,6 +1868,18 @@ void RTITool::on_lightEst_clicked()
 
                     double sphereRad = ui->spinSphere->value();
 
+                    QString radFilename="radius.txt";
+                    QFile radFile(radFilename);
+                    QTextStream stream( &radFile );
+                    if (!sphfile.open(QFile::WriteOnly | QFile::Text)) {
+                        qDebug() << "error";
+                    }
+
+                    else{
+                        stream << sphereRad <<"\n";
+                    }
+                    radFile.close();
+
 
                     lv = getLightDirection(box, hpos, iw->cameraMatrix, sphereRad, stream);
 
@@ -1970,6 +1982,46 @@ void RTITool::saveLp(QString fileName){
     file.close();
 }
 
+
+
+
+void RTITool::saveOLp(QString fileName){
+
+    int ns=0;
+    int sn[4]={0,0,0,0};
+    for(int i=0;i<4;i++)
+        if( iw->radius[i]>0){
+            sn[ns]=i;
+            ns=ns+1;
+        }
+
+
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        qDebug() << "error";
+    }
+    else{
+        QTextStream stream( &file );
+        stream << ui->listWidget->count() << " " << ns << "\n";
+
+
+        for(int i=0;i<ui->listWidget->count();i++){
+            stream  << ui->listWidget->item(i)->text() ;
+            double xx=0,yy=0,zz=0;
+            for(int k=0;k<ns;k++){
+            xx=xx+iw->lights[k].at(i)[0];
+            yy=yy+iw->lights[k].at(i)[1];
+            zz=zz+iw->lights[k].at(i)[2];
+            }
+                xx=xx/ns; yy=yy/ns;zz=zz/ns;
+
+                stream << " " << xx <<  " " << yy << " " << zz << "\n";
+        }
+    }
+    file.close();
+}
+
+
 void RTITool::on_saveLp_clicked()
 {
 
@@ -1979,7 +2031,7 @@ void RTITool::on_saveLp_clicked()
                 QDir::currentPath(),
                 tr("*.lp") );
 
-    saveLp(filename);
+    saveOLp(filename);
 
 
 }
@@ -2503,27 +2555,28 @@ void RTITool::on_r4spin_valueChanged(int arg1)
 
 void RTITool::on_w1but_clicked()
 {
-    iw->active=1;
+    iw->active=1; // activate white box 1
 }
 
 void RTITool::on_w2but_clicked()
 {
-    iw->active=2;
+    iw->active=2;// activate white box 2
 }
 
 void RTITool::on_w3but_clicked()
 {
-    iw->active=3;
+    iw->active=3; // activate white box 3
 }
 
 void RTITool::on_w4but_clicked()
 {
-    iw->active=4;
+    iw->active=4; // activate white box 4
 }
 
 
 void RTITool::on_remw1_clicked()
 {
+    // remove white box 1
     iw->white1->setGeometry(QRect(0,0,0,0));
     iw->originw[0]=QPoint(0,0);
     ui->w1l->setText(QString("-"));
@@ -2533,6 +2586,7 @@ void RTITool::on_remw1_clicked()
 
 void RTITool::on_remw2_clicked()
 {
+     // remove white box 2
     iw->white2->setGeometry(QRect(0,0,0,0));
     iw->originw[1]=QPoint(0,0);
     ui->w2l->setText(QString("-"));
@@ -2540,6 +2594,7 @@ void RTITool::on_remw2_clicked()
 
 void RTITool::on_remw3_clicked()
 {
+     // remove white box 3
     iw->white3->setGeometry(QRect(0,0,0,0));
     iw->originw[2]=QPoint(0,0);
     ui->w3l->setText(QString("-"));
@@ -2547,6 +2602,7 @@ void RTITool::on_remw3_clicked()
 
 void RTITool::on_remw4_clicked()
 {
+     // remove white box 4
     iw->white4->setGeometry(QRect(0,0,0,0));
     ui->w4l->setText(QString("-"));
     iw->originw[3]=QPoint(0,0);
@@ -2585,7 +2641,7 @@ void RTITool::on_whiteEst_clicked()
             by = (int) ((double)by / iw->scaleFactor);
 
             out << ax << " " << ay << " " << bx << " " << by << endl;
-
+  // check coordinate (?)
         }
     }
 
@@ -2636,30 +2692,6 @@ void RTITool::on_whiteEst_clicked()
             return;
         }
 
-        /* ATTENZIONE commentato
-        for(int row = 0; row < ui->listWidget->count(); row++)
-        {
-
-            tlx = cx*iw->coilix[0].at(row) +cy*iw->coilix[1].at(row) + iw->coilix[2].at(row);
-            tly = cx*iw->coiliy[0].at(row) +cy*iw->coiliy[1].at(row) + iw->coiliy[2].at(row);
-            // tlz = sqrt(1-tlx*tlx-tly*tly);
-            tlz = cx*iw->coiliz[0].at(row) +cy*iw->coiliz[1].at(row) +iw->coiliz[2].at(row);
-            double norm = sqrt(tlx*tlx+tly*tly+tlz*tlz);
-            tlx=tlx/norm;tly=tly/norm;tlz=tlz/norm;
-
-            if(tlz>elev){
-                lx=tlx;
-                ly=tly;
-                lz=tlz;
-                elev=tlz;
-                lzmax=tlz;
-                rmax=row;
-            }
-
-        }
-// calcolo  lx ly lz per elev max che ponevo a 1. ora non serve. commento
-        item = ui->listWidget->item(rmax);
-        lzmax =lz;*/
     }
 
     double err=0;
@@ -2680,11 +2712,9 @@ void RTITool::on_whiteEst_clicked()
         if(!iw->force8bit){
 
             image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
-            //  image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
-        }
+         }
         else
             image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
-        //image = cv::imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
 
         CI = image.clone();
         cv::cvtColor(image,gim,CV_BGR2GRAY);
@@ -2720,7 +2750,11 @@ void RTITool::on_whiteEst_clicked()
             double norm = sqrt(tlx*tlx+tly*tly+tlz*tlz);
             tlx=tlx/norm;tly=tly/norm;tlz=tlz/norm;
             qDebug() <<  "OK " << tlx << " " << tly << " " << (tlz) ;
+            telev = tlz;
+            tazim = atan(tly/tlx);
         }
+
+        // here (2722-2757) i see I calculated light dirction in the center of the image in case of interpolated/non interpolated directions
 
         for(int k=0; k<4; k++) {
             if(k==0) iw->white1->frameGeometry().getCoords(&ax,&ay,&bx,&by);
@@ -2734,41 +2768,31 @@ void RTITool::on_whiteEst_clicked()
                 bx = (int) ((double)bx / iw->scaleFactor);
                 by = (int) ((double)by / iw->scaleFactor);
 
-                for(int i=0;i<5;i++)
-                    for(int j=0;j<5;j++){
+                // ok here i was sampling points on the rectangle. Skipping too large borders I think
+                // and with an error (step). I changed
+                // k index for the rectangle i,j indexes for samples on rectangle
+                // the sampling before was strangely o_x_x_x_x_x_o_o
+                //  now x_x_x_x_x  including first and last point in the rectangle
 
-                        double vx=ax+(int)((i+1)*(bx-ax)/7.0);
-                        double vy=ay+(int)((j+1)*(by-ay)/7.0);
+                int steps=5;
+
+                for(int i=0;i<steps;i++)
+                    for(int j=0;j<steps;j++){
+
+                        double vx=ax+(int)((i)*(bx-ax)/(steps-1));
+                        double vy=ay+(int)((j)*(by-ay)/(steps-1));
 
                         if(iw->depth==0) // 8 bit
-                            B.at<double>(k*25+j*5+i) = gim.at<unsigned char>(Point((int)vx,(int)vy));
+                            B.at<double>(k*steps*steps+j*steps+i) = gim.at<unsigned char>(Point((int)vx,(int)vy));
                         else // 16 bit
-                            B.at<double>(k*25+j*5+i) = gim.at<unsigned short>(Point((int)vx,(int)vy));
-                        /*
-        if(ui->weightDir->isChecked()){
-        plx = vx*iw->coilix[0].at(row)+vy*iw->coilix[1].at(row)+ iw->coilix[2].at(row);
-        ply = vx*iw->coiliy[0].at(row)+vy*iw->coiliy[1].at(row)+ iw->coiliy[2].at(row);
-        plz = vx*iw->coiliz[0].at(row)+vy*iw->coiliz[1].at(row)+ iw->coiliz[2].at(row);
-        double norm = sqrt(plx*plx+ply*ply+plz*plz);
-        plx=plx/norm;ply=ply/norm;plz=plz/norm;
-        // plz = sqrt(max(0.0,1-plx*plx-ply*ply));
-        pelev = plz;
-        if(i==1 && j==1){
-        qDebug() << "MAH" << vx << vy  << ax << ay << cx << cy;
-        qDebug() <<  row << plx << ply << plz << "!?!";
-        }
-        pazim = atan(ply/tlx);
+                            B.at<double>(k*steps*steps+j*steps+i) = gim.at<unsigned short>(Point((int)vx,(int)vy));
 
-        B.at<double>(k*25+j*5+i) = B.at<double>(k*25+j*5+i)*(double)(tlz)/(double)(plz);
-        }
-          */
-
-                        A.at<double>(k*25+j*5+i,0) = vx*vx;
-                        A.at<double>(k*25+j*5+i,1) = vy*vy;
-                        A.at<double>(k*25+j*5+i,2) = vx*vy;
-                        A.at<double>(k*25+j*5+i,3) = vx;
-                        A.at<double>(k*25+j*5+i,4) = vy;
-                        A.at<double>(k*25+j*5+i,5) = 1;
+                        A.at<double>(k*steps*steps+j*steps+i,0) = vx*vx;
+                        A.at<double>(k*steps*steps+j*steps+i,1) = vy*vy;
+                        A.at<double>(k*steps*steps+j*steps+i,2) = vx*vy;
+                        A.at<double>(k*steps*steps+j*steps+i,3) = vx;
+                        A.at<double>(k*steps*steps+j*steps+i,4) = vy;
+                        A.at<double>(k*steps*steps+j*steps+i,5) = 1;
 
                     }
             }
@@ -2799,11 +2823,13 @@ void RTITool::on_whiteEst_clicked()
                 by = (int) ((double)by / iw->scaleFactor);
 
                 err=0;
-                for(int i=0;i<5;i++)
-                    for(int j=0;j<5;j++){
+                int steps=5;
+                for(int i=0;i<steps;i++)
+                    for(int j=0;j<steps;j++){
 
-                        double vx=ax+(int)((i+1)*(bx-ax)/7.0);
-                        double vy=ay+(int)((j+1)*(by-ay)/7.0);
+
+                        double vx=ax+(int)((i)*(bx-ax)/(steps-1));
+                        double vy=ay+(int)((j)*(by-ay)/(steps-1));
                         double aa = vx*vx*X.at<double>(0)+ vy*vy*X.at<double>(1)+
                                 vx*vy*X.at<double>(2)+ vx*X.at<double>(3)+
                                 vy*X.at<double>(4)+ X.at<double>(5) ;
@@ -2815,6 +2841,7 @@ void RTITool::on_whiteEst_clicked()
                             bb= gim.at<unsigned short>(Point((int)vx,(int)vy));
 
                         err=err+abs(aa-bb)/100;
+                        // compute errors
 
                     }
 
@@ -2823,7 +2850,7 @@ void RTITool::on_whiteEst_clicked()
 
         qDebug() << row << "error " << err;
 
-#if 0//         1 to save correction images
+#if 0//  We can save correction images for check
         /* save correction image */
         double aa;
         for(int i=0;i<CI.cols;i++)
@@ -5254,6 +5281,34 @@ void RTITool::on_saveIdButton_clicked()
 
 }
 
+
+//void RTITool::saveSd(QString filename)
+//{
+//    QFile file(filename);
+//    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+//        qDebug() << "error";
+//    }
+//    else{
+
+
+
+//        QTextStream stream( &file );
+
+//        int flag_dir=0;
+
+//        if(ui->dirInfo->currentIndex()==1) flag_dir=1;
+//        if(ui->dirInfo->currentIndex()==2) flag_dir=2;
+
+
+
+
+
+//    }
+//    file.close();
+//}
+
+
+
 void RTITool::on_loadIdButton_clicked()
 {
 
@@ -5332,7 +5387,7 @@ void RTITool::on_loadCalimButton_clicked()
 {
 
     bList.clear();
-
+    ui->backList->clear();
 
     if(!QDir(ui->folderName->text() + QDir::separator() +"CAL_IMG").exists())
         QDir().mkdir(ui->folderName->text() + QDir::separator() +"CAL_IMG");
@@ -5383,7 +5438,7 @@ void RTITool::on_loadCalimButton_clicked()
     file.close();
 
 
-    if(bList.size() != ui->listWidget->count())
+    if(bList.count() != ui->listWidget->count())
         ui->msgBox->append("ERROR");
 
     ui->backList->addItems( bList );
@@ -5451,6 +5506,10 @@ void RTITool::on_corrBackimgBut_clicked()
         CI = image.clone();
         cv::cvtColor(image,gim,CV_BGR2GRAY);
         cv::cvtColor(corrim,gci,CV_BGR2GRAY);
+
+     //imwrite( "test.png", gci );
+        cv::GaussianBlur( gci, gci, Size( 401,401),0);
+        //  imwrite( "t0st.png", gci );
 
 
         // estimate constant direction per image
@@ -5611,6 +5670,21 @@ void RTITool::on_openProjectButton_clicked()
 
     QString  corrd  = ui->folderName->text() + QDir::separator() + "backlist.txt";
     loadCorrData(corrd);
+
+
+    QString  radf  = ui->folderName->text() + QDir::separator() + "radius.txt";
+
+    QFile file(radf);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+    else{
+    QTextStream textStream(&file);
+
+    QString line = textStream.readLine();
+    if (!line.isNull()){
+     ui->spinSphere->setValue(line.toDouble());
+    }
+}
 
     if(QDir(ui->folderName->text() + QDir::separator() + "CORR_IMG").exists())
         ui->savecLab->setText("OK");
@@ -5953,9 +6027,12 @@ void RTITool::importCalim(QString sourceFolder){
 
 
 
-     if(bList.size() != ui->listWidget->count())
+     if(bList.count() != ui->listWidget->count())
          ui->msgBox->append("ERROR");
+
+  ui->backList->addItems( bList );
 }
+
 
 
 
@@ -6179,3 +6256,12 @@ void RTITool::on_spinSy_valueChanged(int arg1)
     iw->cropArea->show();
     //iw->cropArea->setGeometry(ax,ay,bx,arg1-ay);
 }
+
+
+
+void RTITool::on_pointsButton_clicked()
+{
+    
+    iw->active=11;
+}
+

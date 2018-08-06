@@ -77,6 +77,9 @@ ImageView::ImageView(QWidget *parent) :
     white3->setGeometry(QRect(0,0,0,0));
     white4->setGeometry(QRect(0,0,0,0));
 
+    pointsCounter=0;
+
+
     connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
     connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
     connect(normalSizeAct, SIGNAL(triggered()), this, SLOT(normalSize()));
@@ -343,6 +346,43 @@ void ImageView::normalSize()
 void ImageView::mousePressEvent(QMouseEvent *event)
 {
 
+    if(active==11){
+        cpoints[pointsCounter].setX(imageLabel->mapFromParent(event->pos()).x()/scaleFactor);
+        cpoints[pointsCounter].setY(imageLabel->mapFromParent(event->pos()).y()/scaleFactor);
+        qDebug() << imageLabel->mapFromParent(event->pos());
+
+        qDebug() << pointsCounter << " " << cpoints[pointsCounter].x() << " "  << cpoints[pointsCounter].y() ;
+
+
+        QImage tmp(imageLabel->pixmap()->toImage());
+                  QPainter painter(&tmp);
+                  QPen paintpen(Qt::red);
+                  paintpen.setWidth(10);
+
+                  painter.setPen(paintpen);
+                  painter.drawPoint(cpoints[pointsCounter]);
+                  imageLabel->setPixmap(QPixmap::fromImage(tmp));
+
+//      QPixmap pixmap(11,11);
+//        pixmap.fill(QColor("red"));
+
+//        QPainter painter(&pixmap);
+//        painter.setPen(QPen(Qt::green));
+//        painter.save();
+//        QTransform trans;
+//        // Move to the center of the widget
+//        //trans.translate(box.center.x*iw->scaleFactor,box.center.y*iw->scaleFactor);
+//        trans.translate(event->pos().x(),event->pos().y());
+
+//        // Move to the center of the image
+//        painter.setTransform(trans);
+//        painter.drawEllipse(QPointF(0,0),5,5);
+//        painter.restore();
+
+
+        pointsCounter = pointsCounter+1;
+    }
+    
     if(active==10){
         originc = imageLabel->mapFromParent(event->pos());
 

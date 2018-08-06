@@ -82,7 +82,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_6">
      <attribute name="title">
@@ -970,7 +970,7 @@
          </rect>
         </property>
         <property name="text">
-         <string>Sspheres radius</string>
+         <string>Spheres radius</string>
         </property>
        </widget>
        <widget class="QDoubleSpinBox" name="spinSphere">
@@ -1108,7 +1108,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabWidgetPage1">
        <attribute name="title">
@@ -1451,6 +1451,63 @@
         </property>
         <property name="text">
          <string>Undistort</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_7">
+       <attribute name="title">
+        <string>Points</string>
+       </attribute>
+       <widget class="QSpinBox" name="spinBox">
+        <property name="geometry">
+         <rect>
+          <x>310</x>
+          <y>20</y>
+          <width>48</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="value">
+         <number>10</number>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox">
+        <property name="geometry">
+         <rect>
+          <x>390</x>
+          <y>20</y>
+          <width>121</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Single Image</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_29">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>20</y>
+          <width>67</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Number </string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pointsButton">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>20</y>
+          <width>161</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Start annotation</string>
         </property>
        </widget>
       </widget>

@@ -43,6 +43,8 @@ public:
     QPixmap* pixs[4];
     QPainter* paints[4];
 
+    int pointsCounter;
+
     int maxval;
     int depth;
 
@@ -67,6 +69,8 @@ public:
     cv::RotatedRect box[4];
 
     QPoint originc;
+    
+    QPoint cpoints[20];
     QPoint endc;
 
     double baseFactor;

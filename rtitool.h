@@ -68,6 +68,7 @@ private slots:
     void on_lightEst_clicked();
 
     void saveLp(QString fileName);
+    void saveOLp(QString fileName);
 
     void on_saveLp_clicked();
 
@@ -233,7 +234,9 @@ private slots:
     void on_spinSx_valueChanged(int arg1);
 
     void on_spinSy_valueChanged(int arg1);
-
+    
+    void on_pointsButton_clicked();
+    
 private:
     Ui::RTITool *ui;
 };
