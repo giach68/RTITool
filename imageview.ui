@@ -54,60 +54,6 @@
     </widget>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuZoom">
-    <property name="title">
-     <string>zoom</string>
-    </property>
-    <addaction name="zoomInAct"/>
-    <addaction name="zoomOutAct"/>
-    <addaction name="normalSizeAct"/>
-   </widget>
-   <widget class="QMenu" name="menuAnnotate">
-    <property name="title">
-     <string>annotate</string>
-    </property>
-    <widget class="QMenu" name="menuWhite_frame">
-     <property name="title">
-      <string>white frame</string>
-     </property>
-     <addaction name="frame1Act"/>
-     <addaction name="frame2Act"/>
-     <addaction name="frame3Act"/>
-     <addaction name="frame4Act"/>
-    </widget>
-    <widget class="QMenu" name="menuSpheres_2">
-     <property name="title">
-      <string>spheres</string>
-     </property>
-     <addaction name="sphere1Act"/>
-     <addaction name="sphere2Act"/>
-     <addaction name="sphere3Act"/>
-     <addaction name="sphere4Act"/>
-     <addaction name="actionClear"/>
-    </widget>
-    <addaction name="actionOff"/>
-    <addaction name="menuWhite_frame"/>
-    <addaction name="menuSpheres_2"/>
-   </widget>
-   <widget class="QMenu" name="menuI_o">
-    <property name="title">
-     <string>i/o</string>
-    </property>
-    <addaction name="loadAct"/>
-   </widget>
-   <addaction name="menuZoom"/>
-   <addaction name="menuAnnotate"/>
-   <addaction name="menuI_o"/>
-  </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="zoomInAct">
    <property name="text">
