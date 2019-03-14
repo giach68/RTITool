@@ -4395,15 +4395,22 @@ void RTITool::loadDirFromLp(QString fileName)
     QStringList parts = line.split(" ");
 
     int siz=parts.size();
+qDebug() << siz << "!!!";
 
-    if(siz <3){
+    if(siz <1){
         ui->msgBox->append("error: missing data");
         return;
     }
 
-    nimg= parts.at(0).toInt();
-    nsph= parts.at(1).toInt();
+    if(siz <2){
+        nsph=1;
+    }
+    else
+         nsph= parts.at(1).toInt();
 
+    nimg= parts.at(0).toInt();
+
+qDebug()<< "NS " << nsph;
     int type = 0;
     if(siz>2)
         type=parts.at(2).toInt();
@@ -6265,3 +6272,185 @@ void RTITool::on_pointsButton_clicked()
     iw->active=11;
 }
 
+
+void RTITool::on_gammaButton_toggled(bool checked)
+{
+    iw->gc = !iw->gc ;
+}
+
+void RTITool::on_gammaSpinBox_valueChanged(double arg1)
+{
+    iw->gamma=arg1;
+}
+
+void RTITool::on_saveRelBut_clicked()
+{
+
+    int flag_dir=0;
+    int flag_chr=1;
+    int flag_lum=0;
+    int flag_corr=0;
+    int flag_binary = 1;
+
+    Rect roi;
+
+    QString file_pref = QInputDialog::getText(this, "Enter Filename with suffix", "");
+    QString  filename=ui->folderName->text() + QDir::separator() + file_pref + ".lp";
+
+    QListWidgetItem *item = ui->listWidget->item(0);
+
+    if(ui->dirInfo->currentIndex()==1) flag_dir=1;
+    if(ui->dirInfo->currentIndex()==2) flag_dir=2;
+
+    QProgressDialog pdialog("Saving appearance profile","",0,100,this);
+    pdialog.setWindowModality(Qt::WindowModal);
+    pdialog.setCancelButton(0);
+    pdialog.setValue(0);
+    pdialog.setWindowTitle("Progress Dialog");
+    pdialog.show();
+
+    if(flag_dir==2 && iw->coilix[0].size()< 2 ){
+        ui->msgBox->append("ERROR: Interpolate direction first");
+        return;
+    }
+
+
+    if(ui->cInt->isChecked()) flag_corr = 1;
+    //if(ui->cBinary->isChecked()) flag_binary=1;
+    //if(ui->cChr->isChecked()) flag_chr = 1;
+
+
+    int ax, ay, sx,sy;
+    iw->cropArea->frameGeometry().getRect(&ax,&ay,&sx,&sy);
+    ax = (int) ((double)ax / iw->scaleFactor);
+    ay = (int) ((double)ay / iw->scaleFactor);
+    sx = (int) ((double)sx / iw->scaleFactor);
+    sy = (int) ((double)sy / iw->scaleFactor);
+    qDebug() << ax << " "<< ay << " "<< sx << " "<< sy << " ";
+
+
+    if(ax > 0) {//cropped
+        roi.x=ax;
+        roi.y=ay;
+        roi.width=sx;
+        roi.height=sy;
+       }else               {
+
+        sx=iw->s.width();
+    sy=iw->s.height();
+    roi.x=0;
+    roi.y=0;
+    roi.width=sx;
+    roi.height=sy;
+}
+
+
+    QFile file(filename);
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        qDebug() << "error";
+    }
+    else{
+        QTextStream stream( &file );
+
+
+        stream <<  ui->listWidget->count() <<"\n";;
+
+
+        // write single directions
+
+    //        stream << "LIGHT_DIRECTIONS (lx ly lz)" <<"\n";
+            int ns=0;
+            double lx, ly,lz;
+            for(int i=0;i<4;i++)
+                if(iw->lights[i].size() >0) ns++;
+            if(ns>0)
+                for(int i=0;i<ui->listWidget->count();i++){
+
+                    item = ui->listWidget->item(i);
+
+                        stream <<  "JPG" << file_pref.toLatin1() << QDir::separator() << "cropped" << QString::number(i).toLatin1() << ".jpg" <<" ";
+                    //  stream << "IMG " << i <<"\n";
+                    lx=0;ly=0;lz=0;
+                    for(int j=0;j<ns;j++){
+                        lx=lx+ iw->lights[j].at(i)[0]/ns;
+                        ly=ly+ iw->lights[j].at(i)[1]/ns;
+                        lz=lz+ iw->lights[j].at(i)[2]/ns;
+                    }
+                    stream <<  lx << " " << ly << " " << lz << "\n";
+                }
+
+
+        //close lp file
+        file.close();
+
+
+
+        unsigned char val;
+
+            Mat image, gim, cim, cim2, aim, mim;
+
+
+
+                Mat crim2(sy,sx,CV_8UC3,cv::Scalar(0,0,0));
+
+                // loop over images
+                for(int row = 0; row < ui->listWidget->count(); row++)
+                {
+                    pdialog.setValue(100*row/ui->listWidget->count());
+                    pdialog.update();
+
+                    item = ui->listWidget->item(row);
+                    QString filen = ui->folderName->text() + QDir::separator()  + "images" + QDir::separator() + item->text();
+
+                    QString cname;
+
+                    if(flag_corr==0){
+                        if(!iw->force8bit)
+                            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+                        else
+                            image = cv::imread(filen.toStdString(), CV_LOAD_IMAGE_COLOR);
+                    }
+                    //  image = imread(item->text().toStdString(), CV_LOAD_IMAGE_COLOR);
+                    else {
+                        cname =  ui->folderName->text() + QDir::separator()  + "CORR_IMG" + QDir::separator()  + "corrected" + QString::number(row) +".tif";
+                        if(!iw->force8bit)
+                            image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
+                        else
+                            image = cv::imread(cname.toStdString(), CV_LOAD_IMAGE_COLOR);
+                    }
+
+                    if(! image.data )                              // Check for invalid input
+                    {
+                        ui->msgBox->append("Error: no corrected images available");
+                        qDebug() << cname;
+                        return;
+                    }
+
+
+                    cim = image(roi);
+
+                    QString cropname =  ui->folderName->text() + QDir::separator()  + QString("JPG") + file_pref + QDir::separator() + QString("cropped") + QString::number(row) + ".jpg";
+
+                    if(!QDir( ui->folderName->text() + QDir::separator()  + QString("JPG") + file_pref).exists())
+                        QDir().mkdir( ui->folderName->text() + QDir::separator()  + QString("JPG") + file_pref);
+
+                      if(iw->depth==0)
+                        imwrite(cropname.toStdString(),cim);
+
+
+                    if(iw->depth==2){
+                        cim.convertTo(cim2, CV_8UC3, 0.00390625);
+                        imwrite(cropname.toStdString(),cim2);
+
+                    }
+
+
+                        cim.release();
+                        cim2.release();
+                    image.release();
+                }
+
+
+}
+
+}

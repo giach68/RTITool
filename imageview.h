@@ -28,6 +28,8 @@ public:
     ~ImageView();
     void load(QString name);
 
+    bool gc;
+    double gamma;
     QSize s;
     QRubberBand *sphere1;
     QRubberBand *sphere2;

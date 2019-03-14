@@ -31,8 +31,6 @@ public:
 
 private slots:
 
-  //  void processAPA(QString filename);
-
     void on_actionImage_list_triggered();
 
     void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
@@ -237,6 +235,12 @@ private slots:
     
     void on_pointsButton_clicked();
     
+    void on_gammaButton_toggled(bool checked);
+
+    void on_gammaSpinBox_valueChanged(double arg1);
+
+    void on_saveRelBut_clicked();
+
 private:
     Ui::RTITool *ui;
 };

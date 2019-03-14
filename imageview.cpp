@@ -12,13 +12,76 @@
 
 #define BASE_WIDTH 1200
 
+void GammaCorrection(cv::Mat& src, cv::Mat& dst, float fGamma)
+
+{
+
+unsigned char lut[256];
+
+for (int i = 0; i < 256; i++)
+
+{
+
+lut[i] = cv::saturate_cast<uchar>(pow((float)(i / 255.0), fGamma) * 255.0f);
+
+}
+
+dst = src.clone();
+
+const int channels = dst.channels();
+
+switch (channels)
+
+{
+
+case 1:
+
+{
+
+cv::MatIterator_<uchar> it, end;
+
+for (it = dst.begin<uchar>(), end = dst.end<uchar>(); it != end; it++)
+
+*it = lut[(*it)];
+
+break;
+
+}
+
+case 3:
+
+{
+
+cv::MatIterator_<cv::Vec3b> it, end;
+
+for (it = dst.begin<cv::Vec3b>(), end = dst.end<cv::Vec3b>(); it != end; it++)
+
+{
+
+(*it)[0] = lut[((*it)[0])];
+
+(*it)[1] = lut[((*it)[1])];
+
+(*it)[2] = lut[((*it)[2])];
+
+}
+
+break;
+
+}
+
+}
+
+}
+
 ImageView::ImageView(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ImageView)
 {
     ui->setupUi(this);
 
-
+    gc=0;
+    gamma = 2.2;
     zoomInAct = ui->zoomInAct;
     zoomOutAct = ui->zoomOutAct;
     loadAct = ui->loadAct;
@@ -161,11 +224,15 @@ void ImageView::load( QString fileName)
         double min, max;
          cv::minMaxLoc(imagev, &min, &max);
         qDebug() << "minmax " << min << max;
+        qDebug() << (image.at<cv::Vec3b>(1,1))[0]<< (image.at<cv::Vec3b>(1,1))[1]<< (image.at<cv::Vec3b>(1,1))[2];
 
+qDebug() << "gamma " << gamma ;
+        if(gc)
+        GammaCorrection(image, image, 1/gamma);
 
-       //  imageLabel->setPixmap(QPixmap::fromImage(QImage(imagev.data,imagev.cols,imagev.rows,imagev.step,QImage::Format_RGB888)));
+        qDebug() << "Minmax " << min << max;
+        qDebug() << (image.at<cv::Vec3b>(1,1))[0]<< (image.at<cv::Vec3b>(1,1))[1]<< (image.at<cv::Vec3b>(1,1))[2];
 
-      //  imageLabel->setPixmap(QPixmap::fromImage(image));
         imageLabel->setPixmap(QPixmap::fromImage(QImage(image.data,image.cols,image.rows,image.step,QImage::Format_RGB888)));
 
         s = QSize(image.cols,image.rows);
