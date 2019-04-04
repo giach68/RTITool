@@ -5514,9 +5514,9 @@ void RTITool::on_corrBackimgBut_clicked()
         cv::cvtColor(image,gim,CV_BGR2GRAY);
         cv::cvtColor(corrim,gci,CV_BGR2GRAY);
 
-     //imwrite( "test.png", gci );
+      //  imwrite( "test.png", gim );
         cv::GaussianBlur( gci, gci, Size( 401,401),0);
-        //  imwrite( "t0st.png", gci );
+       // imwrite( "tost.png", gci );
 
 
         // estimate constant direction per image
@@ -5544,9 +5544,6 @@ void RTITool::on_corrBackimgBut_clicked()
         }
 
 
-
-
-
         for(int i=0;i<image.cols;i++)
             for(int j=0;j<image.rows;j++){
                 double vx =i;
@@ -5558,6 +5555,7 @@ void RTITool::on_corrBackimgBut_clicked()
                     plz = vx*iw->coiliz[0].at(row)+vy*iw->coiliz[1].at(row)+ iw->coiliz[2].at(row);
                     double norm = sqrt(plx*plx+ply*ply+plz*plz);
                     plx=plx/norm;ply=ply/norm;plz=plz/norm;
+                      //    qDebug() <<  "OK2 " << plx << " " << ply << " " << plz ;
                 }
 
                 if(iw->depth == 0){
@@ -5578,7 +5576,7 @@ void RTITool::on_corrBackimgBut_clicked()
                     Vec<unsigned short, 3>  color = image.at<Vec<unsigned short, 3> >(Point(i,j));
                     unsigned short gray = (unsigned short) gim.at<unsigned short>(Point(i,j));
 
-                    aa= (double) gci.at<unsigned short>(Point(i,j));
+                    aa = (double) gci.at<unsigned short>(Point(i,j));
                     aa=abs(aa/plz);
                     double ww = ui->refWhite_2->value();
 
@@ -6004,7 +6002,7 @@ void RTITool::loadCorrData(QString fileName)
 }
 
 void RTITool::importCalim(QString sourceFolder){
-     bList.clear();
+     bList.clear();   
 
      QDir sourceDir(sourceFolder);
 
@@ -6025,6 +6023,7 @@ void RTITool::importCalim(QString sourceFolder){
 
      for(int i = 0; i< bList.count(); i++) {
          QString srcName = sourceFolder + QDir::separator() + bList[i];
+                bList[i].replace(" ","_");
          QString destName = destFolder + QDir::separator() + bList[i];
 
          progress.setValue(i*100/bList.count());
@@ -6158,6 +6157,7 @@ void RTITool::on_undistortCalibBut_clicked()
            image.release();
            image_und.release();
            QFile::remove(filen);
+
        }
 
        //reload the undistorted images
@@ -6295,14 +6295,20 @@ void RTITool::on_saveRelBut_clicked()
     Rect roi;
 
     QString file_pref = QInputDialog::getText(this, "Enter Filename with suffix", "");
-    QString  filename=ui->folderName->text() + QDir::separator() + file_pref + ".lp";
+
+
+    if(!QDir( ui->folderName->text() + QDir::separator()  + QString("JPG") + file_pref).exists())
+        QDir().mkdir( ui->folderName->text() + QDir::separator()  + QString("JPG") + file_pref);
+
+
+    QString  filename=ui->folderName->text() + QDir::separator()  + QString("JPG") + file_pref + QDir::separator() + file_pref + ".lp";
 
     QListWidgetItem *item = ui->listWidget->item(0);
 
     if(ui->dirInfo->currentIndex()==1) flag_dir=1;
     if(ui->dirInfo->currentIndex()==2) flag_dir=2;
 
-    QProgressDialog pdialog("Saving appearance profile","",0,100,this);
+    QProgressDialog pdialog("Saving relight data","",0,100,this);
     pdialog.setWindowModality(Qt::WindowModal);
     pdialog.setCancelButton(0);
     pdialog.setValue(0);
@@ -6368,7 +6374,7 @@ void RTITool::on_saveRelBut_clicked()
 
                     item = ui->listWidget->item(i);
 
-                        stream <<  "JPG" << file_pref.toLatin1() << QDir::separator() << "cropped" << QString::number(i).toLatin1() << ".jpg" <<" ";
+                        stream  << "cropped" << QString::number(i).toLatin1() << ".jpg" <<" ";
                     //  stream << "IMG " << i <<"\n";
                     lx=0;ly=0;lz=0;
                     for(int j=0;j<ns;j++){
@@ -6430,9 +6436,6 @@ void RTITool::on_saveRelBut_clicked()
                     cim = image(roi);
 
                     QString cropname =  ui->folderName->text() + QDir::separator()  + QString("JPG") + file_pref + QDir::separator() + QString("cropped") + QString::number(row) + ".jpg";
-
-                    if(!QDir( ui->folderName->text() + QDir::separator()  + QString("JPG") + file_pref).exists())
-                        QDir().mkdir( ui->folderName->text() + QDir::separator()  + QString("JPG") + file_pref);
 
                       if(iw->depth==0)
                         imwrite(cropname.toStdString(),cim);
