@@ -241,6 +241,10 @@ private slots:
 
     void on_saveRelBut_clicked();
 
+    void on_zoomButton_clicked();
+
+    void on_zoomButton2_clicked();
+
 private:
     Ui::RTITool *ui;
 };

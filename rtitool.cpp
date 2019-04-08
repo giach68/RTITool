@@ -859,6 +859,10 @@ RTITool::RTITool(QWidget *parent) :
     ui->tabDir->setTabEnabled(1, false);
 
     ui->folderName->setReadOnly(true);
+
+
+    ui->zoomButton->setShortcut(tr("Ctrl+Z"));
+    ui->zoomButton2->setShortcut(QKeySequence::ZoomOut);
 }
 
 RTITool::~RTITool()
@@ -4395,7 +4399,7 @@ void RTITool::loadDirFromLp(QString fileName)
     QStringList parts = line.split(" ");
 
     int siz=parts.size();
-qDebug() << siz << "!!!";
+    qDebug() << siz << "!!!";
 
     if(siz <1){
         ui->msgBox->append("error: missing data");
@@ -4410,7 +4414,7 @@ qDebug() << siz << "!!!";
 
     nimg= parts.at(0).toInt();
 
-qDebug()<< "NS " << nsph;
+    qDebug()<< "NS " << nsph;
     int type = 0;
     if(siz>2)
         type=parts.at(2).toInt();
@@ -4478,6 +4482,8 @@ qDebug()<< "NS " << nsph;
             vec[2] = vec[2]/norm;
 
             iw->lights[0].push_back(vec);
+
+            qDebug() << "ldir " << (iw->lights[0].at(i))[0] << (iw->lights[0].at(i))[1] << (iw->lights[0].at(i))[2];
         }
         else
             for(int j=0;j<nsph;j++){
@@ -4809,8 +4815,6 @@ void RTITool::loadCalib(QString fileName)
 
     QString dstFile = ui->folderName->text() + QDir::separator()  + "calib.txt";
 
-
-
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
          ui->msgBox->append("Invalid calibration file");
         return;
@@ -4952,7 +4956,7 @@ void RTITool::on_r2_2Spin_valueChanged(int arg1)
 
     QPixmap pixmap((int)((float)(bx-ax)*iw->scaleFactor),(int)((float)(by-ay)*iw->scaleFactor));
     pixmap.fill(QColor("transparent"));
-    iw->ls[1]->setScaledContents(true);;;
+    iw->ls[1]->setScaledContents(true);
     QPainter painter(&pixmap);
 
     if(ui->projBox->isChecked())
@@ -6456,4 +6460,14 @@ void RTITool::on_saveRelBut_clicked()
 
 }
 
+}
+
+void RTITool::on_zoomButton_clicked()
+{
+    iw->zoomInAct->triggered();
+}
+
+void RTITool::on_zoomButton2_clicked()
+{
+    iw->zoomOutAct->triggered();
 }

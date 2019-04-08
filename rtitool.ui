@@ -82,7 +82,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_6">
      <attribute name="title">
@@ -358,7 +358,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -1953,6 +1953,32 @@
     </property>
     <property name="value">
      <double>2.200000000000000</double>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="zoomButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>470</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>zooom +</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="zoomButton2">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>470</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>zoom-</string>
     </property>
    </widget>
   </widget>

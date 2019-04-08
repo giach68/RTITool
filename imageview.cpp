@@ -9,8 +9,9 @@
 #include <QPalette>
 #include <QPainter>
 #include <QPixmap>
+#include <QShortcut>
 
-#define BASE_WIDTH 1200
+#define BASE_WIDTH 600
 
 void GammaCorrection(cv::Mat& src, cv::Mat& dst, float fGamma)
 
@@ -80,10 +81,15 @@ ImageView::ImageView(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
     gc=0;
     gamma = 2.2;
     zoomInAct = ui->zoomInAct;
     zoomOutAct = ui->zoomOutAct;
+   // ui->zoomInAct->setShortcut(QKeySequence::ZoomIn);
+    //ui->zoomOutAct->setShortcut(QKeySequence::ZoomOut);
+    ui->zoomOutAct->setEnabled(true);
+    ui->zoomInAct->setEnabled(true);
     loadAct = ui->loadAct;
     normalSizeAct = ui->normalSizeAct;
     //   QImage image("/home/giach/Data/Repos/app/test.jpg");
@@ -142,6 +148,10 @@ ImageView::ImageView(QWidget *parent) :
 
     pointsCounter=0;
 
+    shortcut = new QShortcut(QKeySequence(QKeySequence::ZoomIn),parent);
+    connect(shortcut, SIGNAL(activated()), zoomInAct, SLOT(triggered()));
+    shortcut2 = new QShortcut(QKeySequence(QKeySequence::ZoomOut),parent);
+    connect(shortcut2, SIGNAL(activated()), this, SLOT(zoomOut()));
 
     connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
     connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
@@ -251,10 +261,9 @@ qDebug() << "gamma " << gamma ;
         }
         qDebug() << (imagev.at<cv::Vec3b>(cy,cx))[0]<< (imagev.at<cv::Vec3b>(cy,cx))[1]<< (imagev.at<cv::Vec3b>(cy,cx))[2];
         qDebug() << (imagev.at<cv::Vec3s>(cy,cx))[0]<< (imagev.at<cv::Vec3s>(cy,cx))[1]<< (imagev.at<cv::Vec3s>(cy,cx))[2];
-       // QColor(image.pixel(cx,cy)).getRgb(&r,&g,&b,&a);
-       // qDebug() << r << g << b;
-        qDebug() << (int)std::min(BASE_WIDTH,s.width());
-        resize((int)std::min(BASE_WIDTH,s.width()), (int)std::min(BASE_WIDTH,s.width())/ratio);
+
+
+
 
 
 
@@ -300,13 +309,17 @@ qDebug() << "gamma " << gamma ;
         zoomFactor=1.0;
         imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
 
+        qDebug() << (int)std::min(BASE_WIDTH,s.width());
+         resize(scaleFactor * imageLabel->pixmap()->size());
+       //resize((int)std::min(BASE_WIDTH,s.width()), (int)std::min(BASE_WIDTH,s.width())/ratio);
+
         adjustScrollBar(scrollArea->horizontalScrollBar(), baseFactor);
         adjustScrollBar(scrollArea->verticalScrollBar(), baseFactor);
 
         this->repaint();
         qApp->processEvents();
-        qDebug() << s.width();
-        qDebug() << (baseFactor);
+  //      qDebug() << s.width();
+//        qDebug() << (baseFactor);
 
     }
 

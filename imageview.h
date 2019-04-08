@@ -9,6 +9,7 @@
 #include <QRubberBand>
 #include <QPoint>
 #include <QMouseEvent>
+#include <QShortcut>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -28,6 +29,8 @@ public:
     ~ImageView();
     void load(QString name);
 
+    QShortcut* shortcut;
+    QShortcut* shortcut2;
     bool gc;
     double gamma;
     QSize s;
@@ -88,6 +91,10 @@ public:
     QLabel *imageLabel;
     QScrollArea *scrollArea;
 
+    QAction *zoomInAct;
+    QAction *zoomOutAct;
+    QAction *loadAct;
+
 private slots:
     //void open();
     void zoomIn();
@@ -119,15 +126,16 @@ private slots:
 
     void on_actionClear_triggered();
 
+
+
+
 private:
     Ui::ImageView *ui;
     QAction *normalSizeAct;
     //   QAction *aboutAct;
-    QAction *loadAct;
-    QAction *zoomInAct;
-    QAction *zoomOutAct;
 
     QRubberBand *rub1;
+
 
 
 
